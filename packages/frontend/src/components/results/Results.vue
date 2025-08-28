@@ -153,15 +153,23 @@ const stopSearch = async () => {
     <template #content>
       <div class="flex flex-col h-full">
         <div class="flex justify-between items-center mb-4">
-          <span class="text-xl font-semibold">
-            <i class="fas fa-list mr-2"></i>
-            <template v-if="store.results.searchResults">
-              Matches ({{ store.results.uniqueMatchesCount }} matches)
-            </template>
-            <template v-else-if="store.status.isSearching">
-              Searching...
-            </template>
-          </span>
+          <div class="flex flex-col">
+            <span class="text-xl font-semibold">
+              <i class="fas fa-list mr-2"></i>
+              <template v-if="store.results.searchResults">
+                Matches ({{ store.results.uniqueMatchesCount }} matches)
+              </template>
+              <template v-else-if="store.status.isSearching">
+                Searching...
+              </template>
+            </span>
+            <span v-if="store.currentPatternName" class="text-sm text-gray-400 mt-1 ml-7">
+              Pattern: {{ store.currentPatternName }}
+            </span>
+            <span v-else-if="store.pattern" class="text-sm text-gray-400 mt-1 ml-7">
+              Custom Pattern
+            </span>
+          </div>
           <div class="text-sm text-gray-500 flex items-center gap-2">
             <template v-if="store.status.isSearching">
               <div class="shimmer">Searching {{ store.status.progress }}%</div>

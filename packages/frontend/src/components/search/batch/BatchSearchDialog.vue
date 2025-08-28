@@ -27,6 +27,7 @@ function applyPattern(patternName: string) {
       const foundPattern = module.TRUFFLEHOG_PATTERNS.find(p => p.name === patternName);
       if (foundPattern) {
         grepStore.pattern = foundPattern.pattern;
+        grepStore.currentPatternName = patternName;
         batchSearchStore.closeResultsDialog();
         grepStore.searchGrepRequests();
       }

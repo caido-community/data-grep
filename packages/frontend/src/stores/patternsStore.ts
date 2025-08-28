@@ -165,6 +165,7 @@ export const usePatternsStore = defineStore("patterns", () => {
 
   function applyPattern(pattern: PredefinedPattern) {
     grepStore.pattern = pattern.pattern;
+    grepStore.currentPatternName = pattern.name;
     grepStore.options.matchGroups = pattern.matchGroups || null;
     closeDialog();
   }

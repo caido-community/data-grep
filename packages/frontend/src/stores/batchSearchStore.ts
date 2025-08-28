@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref, reactive, computed } from "vue";
 import { useSDK } from "@/plugins/sdk";
 import { useGrepRepository } from "@/repositories/grep";
+import { useGrepStore } from "./grepStore";
 import { TRUFFLEHOG_PATTERNS } from "../trufflehog_patterns";
 import type { GrepOptions } from "shared";
 
@@ -75,6 +76,21 @@ export const useBatchSearchStore = defineStore("batchSearch", () => {
         status.currentPattern = pattern.name;
         
         try {
+          // First validate the regex pattern
+          try {
+            new RegExp(pattern.pattern, 'i');
+          } catch (regexError) {
+            console.error(`Invalid regex pattern "${pattern.name}": ${pattern.pattern}`);
+            sdk.window.showToast(`Invalid regex in "${pattern.name}": ${regexError}`, {
+              variant: "error",
+            });
+            continue;
+          }
+          
+          // Set the current pattern name for display in results
+          const grepStore = useGrepStore();
+          grepStore.currentPatternName = pattern.name;
+          
           // Search with this pattern
           const result = await grepRepository.searchGrepRequests(
             pattern.pattern,
@@ -92,7 +108,10 @@ export const useBatchSearchStore = defineStore("batchSearch", () => {
             });
           }
         } catch (error) {
-          console.error(`Error searching with pattern ${pattern.name}:`, error);
+          console.error(`Error searching with pattern "${pattern.name}":`, error);
+          sdk.window.showToast(`Error in pattern "${pattern.name}": ${error}`, {
+            variant: "error",
+          });
         }
 
         status.patternsCompleted++;
