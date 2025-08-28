@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { GuideContainer } from "@/components/guide";
-import { useAIStore, useGrepStore, useGuideStore, usePatternsStore } from "@/stores";
+import { useAIStore, useGrepStore, useGuideStore, usePatternsStore, useBatchSearchStore } from "@/stores";
 import Button from "primevue/button";
 import Divider from "primevue/divider";
 import Options from "./Options.vue";
 import Search from "./Search.vue";
 import { AIDialogContainer } from "./ai-dialog";
 import { PatternsDialogContainer } from "./patterns";
+import BatchSearchDialog from "./batch/BatchSearchDialog.vue";
 
 const grepStore = useGrepStore();
 const aiStore = useAIStore();
 const patternsStore = usePatternsStore();
 const guideStore = useGuideStore();
+const batchSearchStore = useBatchSearchStore();
 </script>
 
 <template>
@@ -30,7 +32,7 @@ const guideStore = useGuideStore();
     <Options />
 
     <div class="flex justify-between mt-2 gap-2">
-      <div class="flex gap-2">
+      <div class="flex gap-2 flex-wrap">
         <Button
           label="Search"
           icon="fas fa-search"
@@ -38,6 +40,14 @@ const guideStore = useGuideStore();
           @click="grepStore.searchGrepRequests"
           :loading="grepStore.status.isSearching"
           :disabled="!grepStore.pattern.trim()"
+        />
+        <Button
+          label="Search All Secrets"
+          icon="fas fa-key"
+          class="p-button-warning"
+          @click="batchSearchStore.searchAllSecrets(grepStore.options)"
+          :loading="batchSearchStore.status.isSearching"
+          tooltip="Search for all known secret patterns"
         />
         <Button
           :loading="aiStore.isProcessing"
@@ -66,5 +76,6 @@ const guideStore = useGuideStore();
     <AIDialogContainer />
     <PatternsDialogContainer />
     <GuideContainer />
+    <BatchSearchDialog />
   </div>
 </template>
