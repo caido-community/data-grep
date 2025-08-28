@@ -1,0 +1,1274 @@
+{
+  "sendinbluev2.keyPat": {
+    "pattern": "\\b(xkeysib\\-[A-Za-z0-9_-]{81})\\b",
+    "keywords": [
+      "xkeysib"
+    ]
+  },
+  "squareup.keyPat": {
+    "pattern": "\\b(sq0idp-[0-9A-Za-z]{22})\\b",
+    "keywords": [
+      "sq0idp-"
+    ]
+  },
+  "databrickstoken.keyPat": {
+    "pattern": "\\b(dapi[0-9a-f]{32}(-\\d)?)\\b",
+    "keywords": [
+      "databricks",
+      "dapi"
+    ]
+  },
+  "freshdesk.urlPat": {
+    "pattern": "\\b([0-9a-z-]{1,}\\.freshdesk\\.com)\\b",
+    "keywords": [
+      "freshdesk"
+    ]
+  },
+  "endorlabs.keyAndSecretPat": {
+    "pattern": "\\b(endr\\+[a-zA-Z0-9-]{16})\\b",
+    "keywords": [
+      "endr+"
+    ]
+  },
+  "ftp.keyPat": {
+    "pattern": "\\bftp://[\\S]{3,50}:([\\S]{3,50})@[-.%\\w\\/:]+\\b",
+    "keywords": [
+      "ftp://"
+    ]
+  },
+  "azure_batch.urlPat": {
+    "pattern": "https://(.{1,50})\\.(.{1,50})\\.batch\\.azure\\.com",
+    "keywords": [
+      ".batch.azure.com"
+    ]
+  },
+  "azure_batch.secretPat": {
+    "pattern": "[A-Za-z0-9+/=]{88}",
+    "keywords": [
+      ".batch.azure.com"
+    ]
+  },
+  "finage.keyPat": {
+    "pattern": "\\b(API_KEY[0-9A-Z]{32})\\b",
+    "keywords": [
+      "finage"
+    ]
+  },
+  "adafruitio.keyPat": {
+    "pattern": "\\b(aio\\_[a-zA-Z0-9]{28})\\b",
+    "keywords": [
+      "aio_"
+    ]
+  },
+  "nightfall.keyPat": {
+    "pattern": "\\b(NF\\-[a-zA-Z0-9]{32})\\b",
+    "keywords": [
+      "nightfall"
+    ]
+  },
+  "deno.tokenPat": {
+    "pattern": "\\b(dd[pw]_[a-zA-Z0-9]{36})\\b",
+    "keywords": [
+      "ddp_",
+      "ddw_"
+    ]
+  },
+  "closecrm.keyPat": {
+    "pattern": "\\b(api_[a-z0-9A-Z.]{45})\\b",
+    "keywords": [
+      "close"
+    ]
+  },
+  "langsmith.keyPat": {
+    "pattern": "\\b(lsv2_(?:pt|sk)_[a-f0-9]{32}_[a-f0-9]{10})\\b",
+    "keywords": [
+      "lsv2_pt_",
+      "lsv2_sk_"
+    ]
+  },
+  "docker.keyPat": {
+    "pattern": "{(?:\\s|\\\\+[nrt])*\\\\*\"auths\\\\*\"(?:\\s|\\\\+t)*:(?:\\s|\\\\+t)*{(?:\\s|\\\\+[nrt])*\\\\*\"(?i:https?:\\/\\/)?[a-z0-9\\-.:\\/]+\\\\*\"(?:\\s|\\\\+t)*:(?:\\s|\\\\+t)*{(?:(?:\\s|\\\\+[nrt])*\\\\*\"(?i:auth|email|username|password)\\\\*\"\\s*:\\s*\\\\*\".*\\\\*\"\\s*,?)+?(?:\\s|\\\\+[nrt])*}(?:\\s|\\\\+[nrt])*}(?:\\s|\\\\+[nrt])*}",
+    "keywords": [
+      "auths"
+    ]
+  },
+  "googleoauth2.keyPat": {
+    "pattern": "\\b(ya29\\.(?i:[a-z0-9_-]{10,}))(?:[^a-z0-9_-]|\\z)",
+    "keywords": [
+      "ya29."
+    ]
+  },
+  "signalwire.urlPat": {
+    "pattern": "\\b([0-9a-z-]{3,64}\\.signalwire\\.com)\\b",
+    "keywords": [
+      "signalwire"
+    ]
+  },
+  "hashicorpvaultauth.vaultUrlPat": {
+    "pattern": "(https?:\\/\\/[^\\s\\/]*\\.hashicorp\\.cloud(?::\\d+)?)(?:\\/[^\\s]*)?",
+    "keywords": [
+      "hashicorp"
+    ]
+  },
+  "v2.keyPat": {
+    "pattern": "\\b(bkua_[a-z0-9]{40})\\b",
+    "keywords": [
+      "bkua_"
+    ]
+  },
+  "signable.keywordPat": {
+    "pattern": "(?i)([a-z]{2})signable",
+    "keywords": [
+      "signable"
+    ]
+  },
+  "tableau.tokenSecretPat": {
+    "pattern": "\\b([A-Za-z0-9+/]{22}==:[A-Za-z0-9]{32})\\b",
+    "keywords": [
+      "tableau",
+      "online.tableau.com"
+    ]
+  },
+  "tableau.tableauURLPat": {
+    "pattern": "\\b([a-zA-Z0-9\\-]+\\.online\\.tableau\\.com)\\b",
+    "keywords": [
+      "tableau",
+      "online.tableau.com"
+    ]
+  },
+  "invoiceocean.urlPat": {
+    "pattern": "\\b([0-9a-z]{1,}\\.invoiceocean\\.com)\\b",
+    "keywords": [
+      "invoiceocean"
+    ]
+  },
+  "sparkpost.keyPat": {
+    "pattern": "\\b([a-zA-Z0-9]{40})\\b",
+    "keywords": [
+      "sparkpost"
+    ]
+  },
+  "gemini.keyPat": {
+    "pattern": "\\b((?:master-|account-)[0-9A-Za-z]{20})\\b",
+    "keywords": [
+      "master-",
+      "account-"
+    ]
+  },
+  "gemini.secretPat": {
+    "pattern": "[A-Za-z0-9]{27,28}",
+    "keywords": [
+      "master-",
+      "account-"
+    ]
+  },
+  "azure_openai.azureUrlPat": {
+    "pattern": "(?i)([a-z0-9-]+\\.openai\\.azure\\.com)",
+    "keywords": [
+      ".openai.azure.com"
+    ]
+  },
+  "locationiq.keyPat": {
+    "pattern": "\\b(pk\\.[a-zA-Z-0-9]{32})\\b",
+    "keywords": [
+      "locationiq"
+    ]
+  },
+  "frameio.keyPat": {
+    "pattern": "\\b(fio-u-[0-9a-zA-Z_-]{64})\\b",
+    "keywords": [
+      "fio-u-"
+    ]
+  },
+  "grafanaserviceaccount.keyPat": {
+    "pattern": "\\b(glsa_[0-9a-zA-Z_]{41})\\b",
+    "keywords": [
+      "glsa_"
+    ]
+  },
+  "grafanaserviceaccount.domainPat": {
+    "pattern": "\\b([a-zA-Z0-9-]+\\.grafana\\.net)\\b",
+    "keywords": [
+      "glsa_"
+    ]
+  },
+  "saucelabs.baseUrlPat": {
+    "pattern": "\\b(api\\.(?:us|eu)-(?:west|east|central)-[0-9].saucelabs\\.com)\\b",
+    "keywords": [
+      "saucelabs"
+    ]
+  },
+  "supabasetoken.keyPat": {
+    "pattern": "\\b(sbp_[a-z0-9]{40})\\b",
+    "keywords": [
+      "sbp_"
+    ]
+  },
+  "clickhelp.portalPat": {
+    "pattern": "\\b([0-9A-Za-z-]{3,20}\\.(?:try\\.)?clickhelp\\.co)\\b",
+    "keywords": [
+      "clickhelp.co"
+    ]
+  },
+  "redis.keyPat": {
+    "pattern": "\\bredi[s]{1,2}://[\\S]{3,50}:([\\S]{3,50})@[-.%\\w\\/:]+\\b",
+    "keywords": [
+      "redis"
+    ]
+  },
+  "redis.azureRedisPat": {
+    "pattern": "\\b([\\w\\d.-]{1,100}\\.redis\\.cache\\.windows\\.net:6380),password=([^,]{44}),ssl=True,abortConnect=False\\b",
+    "keywords": [
+      "redis"
+    ]
+  },
+  "azurecontainerregistry.urlPat": {
+    "pattern": "([a-z0-9][a-z0-9-]{1,100}[a-z0-9])\\.azurecr\\.io",
+    "keywords": [
+      ".azurecr.io"
+    ]
+  },
+  "azurecontainerregistry.passwordPat": {
+    "pattern": "\\b[a-zA-Z0-9+/]{42}\\+ACR[a-zA-Z0-9]{6}\\b",
+    "keywords": [
+      ".azurecr.io"
+    ]
+  },
+  "sendgrid.keyPat": {
+    "pattern": "\\bSG\\.[\\w\\-]{20,24}\\.[\\w\\-]{39,50}\\b",
+    "keywords": [
+      "SG."
+    ]
+  },
+  "trufflehogenterprise.keyPat": {
+    "pattern": "\\bthog-key-[0-9a-f]{16}\\b",
+    "keywords": [
+      "thog"
+    ]
+  },
+  "trufflehogenterprise.secretPat": {
+    "pattern": "\\bthog-secret-[0-9a-f]{32}\\b",
+    "keywords": [
+      "thog"
+    ]
+  },
+  "trufflehogenterprise.hostnamePat": {
+    "pattern": "\\b[a-z]+-[a-z]+-[a-z]+\\.[a-z][0-9]\\.[a-z]+\\.trufflehog\\.org\\b",
+    "keywords": [
+      "thog"
+    ]
+  },
+  "anypoint.keyPat": {
+    "pattern": "\\b([0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12})\\b",
+    "keywords": [
+      "anypoint"
+    ]
+  },
+  "cloudflarecakey.keyPat": {
+    "pattern": "\\b(v1\\.0-[A-Za-z0-9-]{171})\\b",
+    "keywords": [
+      "cloudflare"
+    ]
+  },
+  "ldap.uriPat": {
+    "pattern": "\\b(?i)ldaps?://[\\S]+\\b",
+    "keywords": [
+      "ldaps://",
+      "ldap://"
+    ]
+  },
+  "ldap.iadPat": {
+    "pattern": "OpenDSObject\\(\\\"(?i)(ldaps?://[\\S]+)\\\", ?\\\"([\\S]+)\\\", ?\\\"([\\S]+)\\\",[ \\d]+\\)",
+    "keywords": [
+      "ldaps://",
+      "ldap://"
+    ]
+  },
+  "sentryorgtoken.orgAuthTokenPat": {
+    "pattern": "\\b(sntrys_eyJ[a-zA-Z0-9=_+/]{197})\\b",
+    "keywords": [
+      "sntrys_eyJ"
+    ]
+  },
+  "launchdarkly.keyPat": {
+    "pattern": "\\b((?:api|sdk)-[a-z0-9]{8}-[a-z0-9]{4}-4[a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12})\\b",
+    "keywords": [
+      "api-",
+      "sdk-"
+    ]
+  },
+  "klaviyo.keyPat": {
+    "pattern": "\\b(pk_[[:alnum:]]{34})\\b",
+    "keywords": [
+      "pk_"
+    ]
+  },
+  "coinbase.keyNamePat": {
+    "pattern": "\\b(organizations\\\\*/\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}\\\\*/apiKeys\\\\*/\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12})\\b",
+    "keywords": [
+      "begin ec"
+    ]
+  },
+  "coinbase.privateKeyPat": {
+    "pattern": "(-----BEGIN EC(?:DSA)? PRIVATE KEY-----(?:\\r|\\n|\\\\+r|\\\\+n)(?:[a-zA-Z0-9+/]+={0,2}(?:\\r|\\n|\\\\+r|\\\\+n))+-----END EC(?:DSA)? PRIVATE KEY-----(?:\\r|\\n|\\\\+r|\\\\+n)?)",
+    "keywords": [
+      "begin ec"
+    ]
+  },
+  "zulipchat.idPat": {
+    "pattern": "\\b([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})\\b",
+    "keywords": [
+      "zulip"
+    ]
+  },
+  "zulipchat.domainPat": {
+    "pattern": "(?i)\\b([a-z0-9-]+\\.zulip(?:chat)?\\.com|chat\\.zulip\\.org)\\b",
+    "keywords": [
+      "zulip"
+    ]
+  },
+  "azuredirectmanagementkey.urlPat": {
+    "pattern": "https://([a-z0-9][a-z0-9-]{0,48}[a-z0-9])\\.management\\.azure-api\\.net",
+    "keywords": [
+      ".management.azure-api.net"
+    ]
+  },
+  "tineswebhook.keyPat": {
+    "pattern": "(https://[\\w-]+\\.tines\\.com/webhook/[a-z0-9]{32}/[a-z0-9]{32})",
+    "keywords": [
+      "tines.com"
+    ]
+  },
+  "hasura.domainPat": {
+    "pattern": "\\b([a-zA-Z0-9-]+\\.hasura\\.app)\\b",
+    "keywords": [
+      "hasura"
+    ]
+  },
+  "postman.keyPat": {
+    "pattern": "\\b(PMAK-[a-zA-Z-0-9]{59})\\b",
+    "keywords": [
+      "PMAK-"
+    ]
+  },
+  "shopify.keyPat": {
+    "pattern": "\\b(shppa_|shpat_)([0-9A-Fa-f]{32})\\b",
+    "keywords": [
+      "shppa_",
+      "shpat_"
+    ]
+  },
+  "shopify.domainPat": {
+    "pattern": "[a-zA-Z0-9-]+\\.myshopify\\.com",
+    "keywords": [
+      "shppa_",
+      "shpat_"
+    ]
+  },
+  "groq.keyPat": {
+    "pattern": "\\b(gsk_[a-zA-Z0-9]{52})\\b",
+    "keywords": [
+      "gsk_"
+    ]
+  },
+  "apideck.keyPat": {
+    "pattern": "\\b(sk_live_[a-z0-9A-Z-]{93})\\b",
+    "keywords": [
+      "apideck"
+    ]
+  },
+  "azure_entra.tenantOnMicrosoftPat": {
+    "pattern": "([\\w-]+\\.onmicrosoft\\.com)",
+    "keywords": []
+  },
+  "refreshtoken.refreshTokenPat": {
+    "pattern": "\\b[01]\\.A[\\w-]{50,}(?:\\.\\d)?\\.Ag[\\w-]{250,}(?:\\.A[\\w-]{200,})?",
+    "keywords": [
+      "0.A",
+      "1.A"
+    ]
+  },
+  "v1.clientSecretPat": {
+    "pattern": "(?i)(?:secret|password| -p[ =]).{0,80}?([\\w~@[\\]:.?*/+=-]{31,34}",
+    "keywords": [
+      "azure",
+      "az",
+      "entra",
+      "msal",
+      "login.microsoftonline.com",
+      ".onmicrosoft.com"
+    ]
+  },
+  "v1.secretPat": {
+    "pattern": "(?i)(?:secret|password| -p[ =]).{0,80}[^A-Za-z0-9!#$%&()*+,\\-./:;<=>?@[\\\\\\]^_{|}~]([A-Za-z0-9!#$%&()*+,\\-./:;<=>?@[\\\\\\]^_{|}~]{31,34})[^A-Za-z0-9!#$%&()*+,\\-./:;<=>?@[\\\\\\]^_{|}~]",
+    "keywords": [
+      "azure",
+      "az",
+      "entra",
+      "msal",
+      "login.microsoftonline.com",
+      ".onmicrosoft.com"
+    ]
+  },
+  "v2.SecretPat": {
+    "pattern": "(?:[^a-zA-Z0-9_~.-]|\\A)([a-zA-Z0-9_~.-]{3}\\dQ~[a-zA-Z0-9_~.-]{31,34})(?:[^a-zA-Z0-9_~.-]|\\z)",
+    "keywords": [
+      "q~"
+    ]
+  },
+  "grafana.keyPat": {
+    "pattern": "\\b(glc_eyJ[A-Za-z0-9+\\/=]{60,160})",
+    "keywords": [
+      "glc_eyJ"
+    ]
+  },
+  "mailchimp.keyPat": {
+    "pattern": "[0-9a-f]{32}-us[0-9]{1,2}",
+    "keywords": [
+      "-us"
+    ]
+  },
+  "discordwebhook.keyPat": {
+    "pattern": "(https:\\/\\/discord\\.com\\/api\\/webhooks\\/[0-9]{18,19}\\/[0-9a-zA-Z-]{68})",
+    "keywords": [
+      "https://discord.com/api/webhooks/"
+    ]
+  },
+  "webexbot.keyPat": {
+    "pattern": "([a-zA-Z0-9]{64}_[a-zA-Z0-9]{4}_[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})",
+    "keywords": [
+      "spark",
+      "webex"
+    ]
+  },
+  "documo.keyPat": {
+    "pattern": "\\b(ey[a-zA-Z0-9]{34}.ey[a-zA-Z0-9]{154}.[a-zA-Z0-9_-]{43})\\b",
+    "keywords": [
+      "documo"
+    ]
+  },
+  "doppler.keyPat": {
+    "pattern": "\\b(dp\\.(?:ct|pt|st(?:\\.[a-z0-9\\-_]{2,35})?|sa|scim|audit)\\.[a-zA-Z0-9]{40,44})\\b",
+    "keywords": [
+      "dp.ct.",
+      "dp.pt.",
+      "dp.st",
+      "dp.sa.",
+      "dp.scim.",
+      "dp.audit."
+    ]
+  },
+  "rabbitmq.keyPat": {
+    "pattern": "\\b(?:amqps?):\\/\\/[\\S]{3,50}:([\\S]{3,50})@[-.%\\w\\/:]+\\b",
+    "keywords": [
+      "amqp"
+    ]
+  },
+  "pagarme.keyPat": {
+    "pattern": "\\b(ak_live_[a-zA-Z0-9]{30})\\b",
+    "keywords": [
+      "ak_live_"
+    ]
+  },
+  "planetscale.usernamePat": {
+    "pattern": "\\b[a-z0-9]{12}\\b",
+    "keywords": [
+      "pscale_tkn_"
+    ]
+  },
+  "planetscale.passwordPat": {
+    "pattern": "\\bpscale_tkn_[A-Za-z0-9_]{43}\\b",
+    "keywords": [
+      "pscale_tkn_"
+    ]
+  },
+  "gcp.keyPat": {
+    "pattern": "\\{[^{]+auth_provider_x509_cert_url[^}]+\\}",
+    "keywords": [
+      "provider_x509"
+    ]
+  },
+  "flyio.keyPat": {
+    "pattern": "\\b(FlyV1 fm\\d+_[A-Za-z0-9+\\/=,_-]{500,700})\\b",
+    "keywords": [
+      "FlyV1"
+    ]
+  },
+  "sourcegraphcody.keyPat": {
+    "pattern": "\\b(slk_[a-f0-9]{64})\\b",
+    "keywords": [
+      "slk_"
+    ]
+  },
+  "onelogin.oauthClientIDPat": {
+    "pattern": "(?i)id[a-zA-Z0-9_' \"=]{0,20}([a-z0-9]{64})",
+    "keywords": [
+      "onelogin"
+    ]
+  },
+  "onelogin.oauthClientSecretPat": {
+    "pattern": "(?i)secret[a-zA-Z0-9_' \"=]{0,20}([a-z0-9]{64})",
+    "keywords": [
+      "onelogin"
+    ]
+  },
+  "mite.urlPat": {
+    "pattern": "\\b([0-9a-z-]{1,}.mite.yo.lk)\\b",
+    "keywords": [
+      "mite"
+    ]
+  },
+  "alibaba.keyPat": {
+    "pattern": "\\b([a-zA-Z0-9]{30})\\b",
+    "keywords": [
+      "LTAI"
+    ]
+  },
+  "alibaba.idPat": {
+    "pattern": "\\b(LTAI[a-zA-Z0-9]{17,21})[\\\"';\\s]*",
+    "keywords": [
+      "LTAI"
+    ]
+  },
+  "reallysimplesystems.keyPat": {
+    "pattern": "\\b(ey[a-zA-Z0-9-._]{153}.ey[a-zA-Z0-9-._]{916,1000})\\b",
+    "keywords": [
+      "reallysimplesystems"
+    ]
+  },
+  "auth0managementapitoken.managementAPITokenPat": {
+    "pattern": "\\b(ey[a-zA-Z0-9._-]+)\\b",
+    "keywords": [
+      "auth0"
+    ]
+  },
+  "auth0managementapitoken.domainPat": {
+    "pattern": "([a-zA-Z0-9\\-]{2,16}\\.[a-zA-Z0-9_-]{2,3}\\.auth0\\.com)",
+    "keywords": [
+      "auth0"
+    ]
+  },
+  "xai.keyPat": {
+    "pattern": "\\b(xai-[0-9a-zA-Z_]{80})\\b",
+    "keywords": [
+      "xai-"
+    ]
+  },
+  "voiceflow.keyPat": {
+    "pattern": "\\b(VF\\.(?:(?:DM|WS)\\.)?[a-fA-F0-9]{24}\\.[a-zA-Z0-9]{16})\\b",
+    "keywords": [
+      "vf",
+      "dm"
+    ]
+  },
+  "azureapimanagementsubscriptionkey.urlPat": {
+    "pattern": "https://([a-z0-9][a-z0-9-]{0,48}[a-z0-9])\\.azure-api\\.net",
+    "keywords": [
+      ".azure-api.net"
+    ]
+  },
+  "readme.keyPat": {
+    "pattern": "(rdme_[a-z0-9]{70})",
+    "keywords": [
+      "rdme_"
+    ]
+  },
+  "mongodb.connStrPat": {
+    "pattern": "\\b(mongodb(?:\\+srv)?://(?P<username>\\S{3,50}):(?P<password>\\S{3,88})@(?P<host>[-.%\\w]+(?::\\d{1,5})?(?:,[-.%\\w]+(?::\\d{1,5})?)*)(?:/(?P<authdb>[\\w-]+)?(?P<options>\\?\\w+=[\\w@/.$-]+(?:&(?:amp;)?\\w+=[\\w@/.$-]+)*)?)?)(?:\\b|$)",
+    "keywords": [
+      "mongodb"
+    ]
+  },
+  "mongodb.placeholderPasswordPat": {
+    "pattern": "^[xX]+|\\*+$",
+    "keywords": [
+      "mongodb"
+    ]
+  },
+  "notion.keyPat": {
+    "pattern": "\\b(secret_[A-Za-z0-9]{43})\\b",
+    "keywords": [
+      "notion"
+    ]
+  },
+  "v1.keyPat": {
+    "pattern": "(?i)(?:elevenlabs|xi-api-key|el|token|key)[^\\.].{0,40}[ =:'\"]+([a-f0-9]{32})\\b",
+    "keywords": [
+      "elevenlabs",
+      "xi-api-key",
+      "xi_api_key"
+    ]
+  },
+  "rubygems.keyPat": {
+    "pattern": "\\b(rubygems_[a-zA0-9]{48})\\b",
+    "keywords": [
+      "rubygems"
+    ]
+  },
+  "jdbc.keyPat": {
+    "pattern": "(?i)jdbc:[\\w]{3,10}:[^\\s\"'<>,(){}[\\]&]{10,512}",
+    "keywords": [
+      "jdbc"
+    ]
+  },
+  "planetscaledb.usernamePat": {
+    "pattern": "\\b[a-z0-9]{20}\\b",
+    "keywords": [
+      "pscale_pw_"
+    ]
+  },
+  "planetscaledb.passwordPat": {
+    "pattern": "\\bpscale_pw_[A-Za-z0-9_]{43}\\b",
+    "keywords": [
+      "pscale_pw_"
+    ]
+  },
+  "planetscaledb.hostPat": {
+    "pattern": "\\b(aws|gcp)\\.connect\\.psdb\\.cloud\\b",
+    "keywords": [
+      "pscale_pw_"
+    ]
+  },
+  "deputy.urlPat": {
+    "pattern": "\\b([0-9a-z]{1,}\\.as\\.deputy\\.com)\\b",
+    "keywords": [
+      "deputy"
+    ]
+  },
+  "openvpn.clientSecretPat": {
+    "pattern": "\\b([a-zA-Z0-9_-]{64,})\\b",
+    "keywords": [
+      "openvpn"
+    ]
+  },
+  "openvpn.domainPat": {
+    "pattern": "\\b(https?://[A-Za-z0-9-]+\\.api\\.openvpn\\.com)\\b",
+    "keywords": [
+      "openvpn"
+    ]
+  },
+  "squareapp.keyPat": {
+    "pattern": "(?:sandbox-)?sq0i[a-z]{2}-[0-9A-Za-z_-]{22,43}",
+    "keywords": [
+      "sq0i"
+    ]
+  },
+  "squareapp.secPat": {
+    "pattern": "(?:sandbox-)?sq0c[a-z]{2}-[0-9A-Za-z_-]{40,50}",
+    "keywords": [
+      "sq0i"
+    ]
+  },
+  "ubidots.keyPat": {
+    "pattern": "\\b(BBFF-[0-9a-zA-Z]{30})\\b",
+    "keywords": [
+      "BBFF-"
+    ]
+  },
+  "trelloapikey.tokenPat": {
+    "pattern": "\\b([a-zA-Z-0-9]{64})\\b",
+    "keywords": [
+      "trello"
+    ]
+  },
+  "robinhoodcrypto.keyPat": {
+    "pattern": "\\b(rh-api-[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\\b",
+    "keywords": [
+      "rh-api-"
+    ]
+  },
+  "robinhoodcrypto.privKeyBase64Pat": {
+    "pattern": "(?:[A-Za-z0-9+\\/]{4})*(?:[A-Za-z0-9+\\/]{2}==|[A-Za-z0-9+\\/]{3}=)",
+    "keywords": [
+      "rh-api-"
+    ]
+  },
+  "terraformcloudpersonaltoken.keyPat": {
+    "pattern": "\\b([A-Za-z0-9]{14}.atlasv1.[A-Za-z0-9]{67})\\b",
+    "keywords": [
+      ".atlasv1."
+    ]
+  },
+  "contentfulpersonalaccesstoken.keyPat": {
+    "pattern": "\\b(CFPAT-[a-zA-Z0-9_\\-]{43})\\b",
+    "keywords": [
+      "CFPAT-"
+    ]
+  },
+  "sumologickey.urlPat": {
+    "pattern": "(?i)api\\.(?:au|ca|de|eu|fed|jp|kr|in|us2)\\.sumologic\\.com",
+    "keywords": [
+      "sumo",
+      "accessId",
+      "accessKey"
+    ]
+  },
+  "artifactory.keyPat": {
+    "pattern": "\\b([a-zA-Z0-9]{64,73})\\b",
+    "keywords": [
+      "artifactory",
+      "jfrog.io"
+    ]
+  },
+  "artifactory.URLPat": {
+    "pattern": "\\b([A-Za-z0-9][A-Za-z0-9\\-]{0,61}[A-Za-z0-9]\\.jfrog\\.io)",
+    "keywords": [
+      "artifactory",
+      "jfrog.io"
+    ]
+  },
+  "sourcegraph.keyPat": {
+    "pattern": "\\b(sgp_(?:[a-fA-F0-9]{16}|local)_[a-fA-F0-9]{40}|sgp_[a-fA-F0-9]{40}|[a-fA-F0-9]{40})\\b",
+    "keywords": [
+      "sgp_"
+    ]
+  },
+  "nvapi.keyPat": {
+    "pattern": "\\b(nvapi-[a-zA-Z0-9_-]{64})\\b",
+    "keywords": [
+      "nvapi-"
+    ]
+  },
+  "aha.URLPat": {
+    "pattern": "\\b([A-Za-z0-9](?:[A-Za-z0-9\\-]{0,61}[A-Za-z0-9])\\.aha\\.io)",
+    "keywords": [
+      "aha.io"
+    ]
+  },
+  "pubnubpublishkey.pubPat": {
+    "pattern": "\\b(pub-c-[0-9a-z]{8}-[0-9a-z]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})\\b",
+    "keywords": [
+      "sub-c-"
+    ]
+  },
+  "pubnubpublishkey.subPat": {
+    "pattern": "\\b(sub-c-[0-9a-z]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})\\b",
+    "keywords": [
+      "sub-c-"
+    ]
+  },
+  "linearapi.keyPat": {
+    "pattern": "\\b(lin_api_[0-9A-Za-z]{40})\\b",
+    "keywords": [
+      "lin_api_"
+    ]
+  },
+  "paypaloauth.idPat": {
+    "pattern": "\\b([A-Za-z0-9_\\.]{7}-[A-Za-z0-9_\\.]{72}|[A-Za-z0-9_\\.]{5}-[A-Za-z0-9_\\.]{38})\\b",
+    "keywords": [
+      "paypal"
+    ]
+  },
+  "paypaloauth.keyPat": {
+    "pattern": "\\b([A-Za-z0-9_\\.\\-]{44,80})\\b",
+    "keywords": [
+      "paypal"
+    ]
+  },
+  "paystack.keyPat": {
+    "pattern": "\\b(sk\\_[a-z]{1,}\\_[A-Za-z0-9]{40})\\b",
+    "keywords": [
+      "paystack"
+    ]
+  },
+  "flutterwave.keyPat": {
+    "pattern": "\\b(FLWSECK-[0-9a-z]{32}-X)\\b",
+    "keywords": [
+      "FLWSECK-"
+    ]
+  },
+  "microsoftteamswebhook.keyPat": {
+    "pattern": "(https:\\/\\/[a-zA-Z-0-9]+\\.webhook\\.office\\.com\\/webhookb2\\/[a-zA-Z-0-9]{8}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{12}\\@[a-zA-Z-0-9]{8}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{12}\\/IncomingWebhook\\/[a-zA-Z-0-9]{32}\\/[a-zA-Z-0-9]{8}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{4}-[a-zA-Z-0-9]{12})",
+    "keywords": [
+      "webhook.office.com"
+    ]
+  },
+  "azureappconfigconnectionstring.connectionStringPat": {
+    "pattern": "Endpoint=(https:\\/\\/[a-zA-Z0-9-]+\\.azconfig\\.io);Id=([a-zA-Z0-9+\\/=]+);Secret=([a-zA-Z0-9+\\/=]+)",
+    "keywords": [
+      ".azconfig.io"
+    ]
+  },
+  "rootly.keyPat": {
+    "pattern": "\\b(rootly_[a-f0-9]{64})\\b",
+    "keywords": [
+      "rootly_"
+    ]
+  },
+  "dotdigital.emailPat": {
+    "pattern": "\\b(apiuser-[a-z0-9]{12}@apiconnector.com)\\b",
+    "keywords": [
+      "@apiconnector.com"
+    ]
+  },
+  "graphcms.keyPat": {
+    "pattern": "\\b(ey[a-zA-Z0-9]{73}.ey[a-zA-Z0-9]{365}.[a-zA-Z0-9_-]{683})\\b",
+    "keywords": [
+      "graphcms"
+    ]
+  },
+  "airtableoauth.tokenPat": {
+    "pattern": "\\b([[:alnum:]]+\\.v1\\.[a-zA-Z0-9_-]+\\.[a-f0-9]+)\\b",
+    "keywords": [
+      "airtable"
+    ]
+  },
+  "fleetbase.keyPat": {
+    "pattern": "\\b(flb_live_[0-9a-zA-Z]{20})\\b",
+    "keywords": [
+      "fleetbase"
+    ]
+  },
+  "kanban.urlPat": {
+    "pattern": "\\b([0-9a-z]{1,}\\.kanbantool\\.com)\\b",
+    "keywords": [
+      "kanban"
+    ]
+  },
+  "loggly.domainPat": {
+    "pattern": "\\b([a-zA-Z0-9-]+\\.loggly\\.com)\\b",
+    "keywords": [
+      "loggly"
+    ]
+  },
+  "azurefunctionkey.azureUrlPat": {
+    "pattern": "\\bhttps:\\/\\/([a-zA-Z0-9-]{2,30})\\.azurewebsites\\.net\\/api\\/([a-zA-Z0-9-]{2,30})\\b",
+    "keywords": [
+      "azure"
+    ]
+  },
+  "okta.domainPat": {
+    "pattern": "\\b[a-z0-9-]{1,40}\\.okta(?:preview|-emea){0,1}\\.com\\b",
+    "keywords": [
+      ".okta"
+    ]
+  },
+  "okta.tokenPat": {
+    "pattern": "\\b00[a-zA-Z0-9_-]{40}\\b",
+    "keywords": [
+      ".okta"
+    ]
+  },
+  "tailscale.keyPat": {
+    "pattern": "\\btskey-[a-z]+-[0-9A-Za-z_]+-[0-9A-Za-z_]+\\b",
+    "keywords": [
+      "tskey-",
+      "tskey-api-",
+      "tskey-oauth-"
+    ]
+  },
+  "auth0oauth.clientSecretPat": {
+    "pattern": "\\b([a-zA-Z0-9_-]{64,})\\b",
+    "keywords": [
+      "auth0"
+    ]
+  },
+  "auth0oauth.domainPat": {
+    "pattern": "\\b([a-zA-Z0-9][a-zA-Z0-9._-]*auth0\\.com)\\b",
+    "keywords": [
+      "auth0"
+    ]
+  },
+  "v2.tokenPat": {
+    "pattern": "\\b(ATATT[A-Za-z0-9+/=_-]+=[A-Za-z0-9]{8})\\b",
+    "keywords": [
+      "atlassian",
+      "confluence",
+      "jira"
+    ]
+  },
+  "v2.domainPat": {
+    "pattern": "\\b((?:[a-zA-Z0-9-]{1,24}\\.)+[a-zA-Z0-9-]{2,24}\\.[a-zA-Z0-9-]{2,16})\\b",
+    "keywords": [
+      "atlassian",
+      "confluence",
+      "jira"
+    ]
+  },
+  "replicate.keyPat": {
+    "pattern": "\\b(r8_[0-9A-Za-z-_]{37})\\b",
+    "keywords": [
+      "replicate",
+      "r8_"
+    ]
+  },
+  "salesforce.accessTokenPat": {
+    "pattern": "\\b00[a-zA-Z0-9]{13}![a-zA-Z0-9_.]{96}\\b",
+    "keywords": [
+      "salesforce"
+    ]
+  },
+  "salesforce.instancePat": {
+    "pattern": "\\bhttps://[0-9a-zA-Z-\\.]{1,100}\\.my\\.salesforce\\.com\\b",
+    "keywords": [
+      "salesforce"
+    ]
+  },
+  "fibery.domainPat": {
+    "pattern": "(?:https?:\\/\\/)?([a-zA-Z0-9-]{1,63})\\.fibery\\.io(?:\\/.*)?",
+    "keywords": [
+      ".fibery.io"
+    ]
+  },
+  "anthropic.keyPat": {
+    "pattern": "\\b(sk-ant-(?:admin01|api03)-[\\w\\-]{93}AA)\\b",
+    "keywords": [
+      "sk-ant-api03",
+      "sk-ant-admin01"
+    ]
+  },
+  "aws.SecretPat": {
+    "pattern": "(?:[^A-Za-z0-9+/]|\\A)([A-Za-z0-9+/]{40})(?:[^A-Za-z0-9+/]|\\z)",
+    "keywords": []
+  },
+  "aws.FalsePositiveSecretPat": {
+    "pattern": "[a-f0-9]{40}",
+    "keywords": []
+  },
+  "session_keys.idPat": {
+    "pattern": "\\b((?:ASIA)[A-Z0-9]{16})\\b",
+    "keywords": [
+      "ASIA"
+    ]
+  },
+  "session_keys.sessionPat": {
+    "pattern": "(?:[^A-Za-z0-9+/]|\\A)([a-zA-Z0-9+/]{100,}={0,3})(?:[^A-Za-z0-9+/=]|\\z)",
+    "keywords": [
+      "ASIA"
+    ]
+  },
+  "access_keys.idPat": {
+    "pattern": "\\b((?:AKIA|ABIA|ACCA)[A-Z0-9]{16})\\b",
+    "keywords": [
+      "AKIA",
+      "ABIA",
+      "ACCA"
+    ]
+  },
+  "pubnubsubscriptionkey.keyPat": {
+    "pattern": "\\b(sub-c-[0-9a-z]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})\\b",
+    "keywords": [
+      "sub-c-"
+    ]
+  },
+  "digitaloceanv2.keyPat": {
+    "pattern": "\\b((?:dop|doo|dor)_v1_[a-f0-9]{64})\\b",
+    "keywords": [
+      "dop_v1_",
+      "doo_v1_",
+      "dor_v1_"
+    ]
+  },
+  "stripepaymentintent.clientSecretPat": {
+    "pattern": "\\b(pi_[a-zA-Z0-9]{24}_secret_[a-zA-Z0-9]{25})\\b",
+    "keywords": [
+      "_secret_"
+    ]
+  },
+  "stripepaymentintent.secretKeyPat": {
+    "pattern": "\\b([rs]k_live_[a-zA-Z0-9]{20,247})\\b",
+    "keywords": [
+      "_secret_"
+    ]
+  },
+  "stripepaymentintent.publishableKeyPat": {
+    "pattern": "\\b(pk_live_[a-zA-Z0-9]{20,247})\\b",
+    "keywords": [
+      "_secret_"
+    ]
+  },
+  "ramp.keyPat": {
+    "pattern": "\\b(ramp_id_[[:alnum:]]{40})\\b",
+    "keywords": [
+      "ramp_"
+    ]
+  },
+  "ramp.secretPat": {
+    "pattern": "\\b(ramp_sec_[[:alnum:]]{48})\\b",
+    "keywords": [
+      "ramp_"
+    ]
+  },
+  "posthog.keyPat": {
+    "pattern": "\\b(phx_[a-zA-Z0-9_]{43})\\b",
+    "keywords": [
+      "phx_"
+    ]
+  },
+  "huggingface.keyPat": {
+    "pattern": "\\b(?:hf_|api_org_)[a-zA-Z0-9]{34}\\b",
+    "keywords": [
+      "hf_",
+      "api_org_"
+    ]
+  },
+  "repositorykey.regex": {
+    "pattern": "\\d+\\.\\d+\\.\\d+",
+    "keywords": [
+      "azure",
+      ".scm.azure-api.net"
+    ]
+  },
+  "flexport.keyPat": {
+    "pattern": "\\b(shltm_[0-9a-zA-Z-_]{40})",
+    "keywords": [
+      "shltm_"
+    ]
+  },
+  "razorpay.keyPat": {
+    "pattern": "(?i)\\brzp_live_[A-Za-z0-9]{14}\\b",
+    "keywords": [
+      "rzp_live_"
+    ]
+  },
+  "razorpay.secretPat": {
+    "pattern": "\\b[A-Za-z0-9]{24}\\b",
+    "keywords": [
+      "rzp_live_"
+    ]
+  },
+  "mapbox.idPat": {
+    "pattern": "([a-zA-Z-0-9]{4,32})",
+    "keywords": [
+      "mapbox"
+    ]
+  },
+  "mapbox.keyPat": {
+    "pattern": "\\b(sk\\.[a-zA-Z-0-9\\.]{80,240})\\b",
+    "keywords": [
+      "mapbox"
+    ]
+  },
+  "salesforceoauth2.instancePat": {
+    "pattern": "\\b(?:https?://)?([0-9a-zA-Z\\-\\.]{1,100}\\.my\\.salesforce\\.com)\\b",
+    "keywords": [
+      "salesforce",
+      "3MVG9"
+    ]
+  },
+  "salesforceoauth2.consumerKeyPat": {
+    "pattern": "\\b(3MVG9[0-9a-zA-Z._+/=]{80,251})",
+    "keywords": [
+      "salesforce",
+      "3MVG9"
+    ]
+  },
+  "liveagent.domainPat": {
+    "pattern": "\\b(https?://[A-Za-z0-9-]+\\.ladesk\\.com)\\b",
+    "keywords": [
+      "liveagent",
+      "ladesk"
+    ]
+  },
+  "pulumi.keyPat": {
+    "pattern": "\\b(pul-[a-z0-9]{40})\\b",
+    "keywords": [
+      "pul-"
+    ]
+  },
+  "prefect.keyPat": {
+    "pattern": "\\b(pnu_[a-zA-Z0-9]{36})\\b",
+    "keywords": [
+      "pnu_"
+    ]
+  },
+  "azure_storage.namePat": {
+    "pattern": "(?i:Account[_.-]?Name|Storage[_.-]?(?:Account|Name))(?:.|\\s){0,20}?\\b([a-z0-9]{3,24})\\b|([a-z0-9]{3,24})(?i:\\.blob\\.core\\.windows\\.net)",
+    "keywords": [
+      "DefaultEndpointsProtocol=http",
+      "EndpointSuffix",
+      "core.windows.net",
+      "AccountName",
+      "Account_Name",
+      "Account.Name",
+      "Account-Name",
+      "StorageAccount",
+      "Storage_Account",
+      "Storage.Account",
+      "Storage-Account",
+      "AccountKey",
+      "Account_Key",
+      "Account.Key",
+      "Account-Key"
+    ]
+  },
+  "azure_storage.keyPat": {
+    "pattern": "(?i:(?:Access|Account|Storage)[_.-]?Key)(?:.|\\s){0,25}?([a-zA-Z0-9+\\/-]{86,88}={0,2})",
+    "keywords": [
+      "DefaultEndpointsProtocol=http",
+      "EndpointSuffix",
+      "core.windows.net",
+      "AccountName",
+      "Account_Name",
+      "Account.Name",
+      "Account-Name",
+      "StorageAccount",
+      "Storage_Account",
+      "Storage.Account",
+      "Storage-Account",
+      "AccountKey",
+      "Account_Key",
+      "Account.Key",
+      "Account-Key"
+    ]
+  },
+  "wepay.appIDPat": {
+    "pattern": "\\b(\\d{6})\\b",
+    "keywords": [
+      "wepay"
+    ]
+  },
+  "npmtokenv2.keyPat": {
+    "pattern": "(npm_[0-9a-zA-Z]{36})",
+    "keywords": [
+      "npm_"
+    ]
+  },
+  "caflou.keyPat": {
+    "pattern": "\\b(eyJhbGciOiJIUzI1NiJ9[a-zA-Z0-9._-]{135})\\b",
+    "keywords": [
+      "caflou"
+    ]
+  },
+  "dfuse.keyPat": {
+    "pattern": "\\b(web\\_[0-9a-z]{32})\\b",
+    "keywords": [
+      "dfuse"
+    ]
+  },
+  "uri.keyPat": {
+    "pattern": "\\bhttps?:\\/\\/[\\w!#$%&()*+,\\-./;<=>?@[\\\\\\]^_{|}~]{0,50}:([\\w!#$%&()*+,\\-./:;<=>?[\\\\\\]^_{|}~]{3,50})@[a-zA-Z0-9.-]+(?:\\.[a-zA-Z]{2,})?(?::\\d{1,5})?[\\w/]+\\b",
+    "keywords": [
+      "http://",
+      "https://"
+    ]
+  },
+  "salesforcerefreshtoken.refreshTokenPat": {
+    "pattern": "(?i)\\b(5AEP861[a-zA-Z0-9._=]{80,})\\b",
+    "keywords": [
+      "salesforce",
+      "5AEP861",
+      "3MVG9"
+    ]
+  },
+  "salesforcerefreshtoken.consumerKeyPat": {
+    "pattern": "\\b(3MVG9[0-9a-zA-Z._+/=]{80,251})",
+    "keywords": [
+      "salesforce",
+      "5AEP861",
+      "3MVG9"
+    ]
+  },
+  "gocardless.keyPat": {
+    "pattern": "\\b(live_[0-9A-Za-z\\_\\-]{40}[ \"'\\r\\n]{1})",
+    "keywords": [
+      "gocardless"
+    ]
+  },
+  "apify.keyPat": {
+    "pattern": "\\b(apify\\_api\\_[a-zA-Z-0-9]{36})\\b",
+    "keywords": [
+      "apify"
+    ]
+  },
+  "twilioapikey.apiKeyPat": {
+    "pattern": "\\bSK[a-zA-Z0-9]{32}\\b",
+    "keywords": [
+      "twilio"
+    ]
+  },
+  "twilioapikey.secretPat": {
+    "pattern": "\\b[0-9a-zA-Z]{32}\\b",
+    "keywords": [
+      "twilio"
+    ]
+  },
+  "gcpapplicationdefaultcredentials.keyPat": {
+    "pattern": "\\{[^{]+client_secret[^}]+\\}",
+    "keywords": [
+      ".apps.googleusercontent.com"
+    ]
+  },
+  "privatekey.keyPat": {
+    "pattern": "(?i)-----\\s*?BEGIN[ A-Z0-9_-]*?PRIVATE KEY\\s*?-----[\\s\\S]*?----\\s*?END[ A-Z0-9_-]*? PRIVATE KEY\\s*?-----",
+    "keywords": [
+      "private key"
+    ]
+  },
+  "azuresastoken.urlPat": {
+    "pattern": "https://([a-zA-Z0-9][a-z0-9_-]{1,22}[a-zA-Z0-9])\\.blob\\.core\\.windows\\.net/[a-z0-9]([a-z0-9-]{1,61}[a-z0-9])?(?:/[a-zA-Z0-9._-]+)*",
+    "keywords": [
+      "azure",
+      ".blob.core.windows.net"
+    ]
+  },
+  "intra42.keyPat": {
+    "pattern": "\\b(s-s4t2(?:ud|af)-[a-f0-9]{64})\\b",
+    "keywords": [
+      "s-s4t2ud-",
+      "s-s4t2af-"
+    ]
+  },
+  "intra42.idPat": {
+    "pattern": "\\b(u-s4t2(?:ud|af)-[a-f0-9]{64})\\b",
+    "keywords": [
+      "s-s4t2ud-",
+      "s-s4t2af-"
+    ]
+  },
+  "openai.keyPat": {
+    "pattern": "\\b(sk-[[:alnum:]_-]+T3BlbkFJ[[:alnum:]_-]+)\\b",
+    "keywords": [
+      "T3BlbkFJ"
+    ]
+  },
+  "zapierwebhook.keyPat": {
+    "pattern": "(https:\\/\\/hooks\\.zapier\\.com\\/hooks\\/catch\\/[A-Za-z0-9\\/]{16})",
+    "keywords": [
+      "hooks.zapier.com/hooks/catch/"
+    ]
+  },
+  "v2.usernamePat": {
+    "pattern": "(?im)(?:user|usr|-u|id)\\S{0,40}?[:=\\s]{1,3}[ '\"=]?([a-zA-Z0-9]{4,40})\\b",
+    "keywords": [
+      "docker",
+      "dckr_pat_",
+      "dckr_oat_"
+    ]
+  },
+  "v2.accessTokenPat": {
+    "pattern": "\\b(dckr_pat_[a-zA-Z0-9_-]{27}|dckr_oat_[a-zA-Z0-9_-]{32})(?:[^a-zA-Z0-9_-]|\\z)",
+    "keywords": [
+      "docker",
+      "dckr_pat_",
+      "dckr_oat_"
+    ]
+  },
+  "twilio.sidPat": {
+    "pattern": "\\bAC[0-9a-f]{32}\\b",
+    "keywords": [
+      "sid",
+      "twilio"
+    ]
+  },
+  "twilio.keyPat": {
+    "pattern": "\\b[0-9a-f]{32}\\b",
+    "keywords": [
+      "sid",
+      "twilio"
+    ]
+  },
+  "zohocrm.keyPat": {
+    "pattern": "\\b(1000\\.[a-f0-9]{32}\\.[a-f0-9]{32})\\b",
+    "keywords": [
+      "1000."
+    ]
+  },
+  "couchbase.connectionStringPat": {
+    "pattern": "\\b(cb\\.[a-z0-9]+\\.cloud\\.couchbase\\.com)\\b",
+    "keywords": [
+      "couchbase://",
+      "couchbases://"
+    ]
+  }
+}
