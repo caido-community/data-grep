@@ -64,38 +64,64 @@ export function buildRegexFilter(regex: RegExp, options: GrepOptions): string {
   return regexFilter;
 }
 
+export interface ExtractedMatch {
+  value: string;
+  startIndex: number;
+  endIndex: number;
+}
+
 /**
  * Extract all matches from a string based on the regex and matchGroups
+ * Returns match values with their positions in the text
  */
 export function extractMatches(
   text: string,
   regex: RegExp,
   matchGroups: number[] | null
-): string[] {
+): ExtractedMatch[] {
   if (!text) return [];
 
   const matches = Array.from(text.matchAll(new RegExp(regex, "g")));
   if (!matches.length) return [];
 
-  const results: string[] = [];
+  const results: ExtractedMatch[] = [];
 
   for (const match of matches) {
+    const matchIndex = match.index ?? 0;
+    
     if (!matchGroups || matchGroups.length === 0) {
-      results.push(match[0]);
+      results.push({
+        value: match[0],
+        startIndex: matchIndex,
+        endIndex: matchIndex + match[0].length,
+      });
       continue;
     }
 
     let foundMatch = false;
     for (const groupIndex of matchGroups) {
       if (match[groupIndex] !== undefined) {
-        results.push(match[groupIndex]);
+        // For capture groups, we need to find the position within the full match
+        const groupValue = match[groupIndex];
+        const groupOffset = match[0].indexOf(groupValue);
+        const startIndex = matchIndex + (groupOffset >= 0 ? groupOffset : 0);
+        
+        results.push({
+          value: groupValue,
+          startIndex,
+          endIndex: startIndex + groupValue.length,
+        });
         foundMatch = true;
         break;
       }
     }
 
     if (!foundMatch) {
-      results.push(match[0]);
+      results.push({
+        value: match[0],
+        startIndex: matchIndex,
+        endIndex: matchIndex + match[0].length,
+      });
     }
   }
 

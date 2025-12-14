@@ -95,20 +95,24 @@ export const useGrepStore = defineStore("grep", () => {
     status.progress = value;
   });
 
-  sdk.backend.onEvent("caidogrep:matches", (matches: number | string[]) => {
+  sdk.backend.onEvent("caidogrep:matches", (matches: number | import("shared").MatchResult[]) => {
     if (typeof matches === "number") {
       results.uniqueMatchesCount += matches;
     } else {
       const newResults = [
         ...(results.searchResults || []),
-        ...Array.from(matches),
+        ...matches,
       ];
 
       if (newResults.length >= 25000) {
         const truncatedResults = newResults.slice(0, 25000);
-        truncatedResults.push(
-          "!!! Results truncated to 25K. Export to view more"
-        );
+        truncatedResults.push({
+          value: "!!! Results truncated to 25K. Export to view more",
+          requestId: "",
+          source: "request",
+          startIndex: 0,
+          endIndex: 0,
+        });
         results.searchResults = truncatedResults;
       } else {
         results.searchResults = newResults;

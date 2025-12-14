@@ -9,12 +9,15 @@ import Card from "primevue/card";
 import Dropdown from "primevue/dropdown";
 import InputText from "primevue/inputtext";
 import VirtualScroller from "primevue/virtualscroller";
+import MatchViewer from "./MatchViewer.vue";
+import type { MatchResult } from "shared";
 import { computed, ref } from "vue";
 
 const store = useGrepStore();
 const isStoppingSearch = ref(false);
 const isExporting = ref(false);
 const isCopying = ref(false);
+const selectedMatch = ref<MatchResult | null>(null);
 const sdk = useSDK();
 
 type SortType =
@@ -63,31 +66,31 @@ const filteredAndSortedResults = computed(() => {
   let results = [...store.results.searchResults];
   if (resultsFilter.value.trim()) {
     const searchTerm = resultsFilter.value.toLowerCase();
-    results = results.filter(item => item.toLowerCase().includes(searchTerm));
+    results = results.filter(item => item.value.toLowerCase().includes(searchTerm));
   }
 
   switch (currentSort.value) {
     case "alphabetical-asc":
       return results.sort((a, b) =>
-        a.toLowerCase().localeCompare(b.toLowerCase())
+        a.value.toLowerCase().localeCompare(b.value.toLowerCase())
       );
     case "alphabetical-desc":
       return results.sort((a, b) =>
-        b.toLowerCase().localeCompare(a.toLowerCase())
+        b.value.toLowerCase().localeCompare(a.value.toLowerCase())
       );
     case "length-asc":
       return results.sort((a, b) => {
-        const lengthDiff = a.length - b.length;
+        const lengthDiff = a.value.length - b.value.length;
         return lengthDiff !== 0
           ? lengthDiff
-          : a.toLowerCase().localeCompare(b.toLowerCase());
+          : a.value.toLowerCase().localeCompare(b.value.toLowerCase());
       });
     case "length-desc":
       return results.sort((a, b) => {
-        const lengthDiff = b.length - a.length;
+        const lengthDiff = b.value.length - a.value.length;
         return lengthDiff !== 0
           ? lengthDiff
-          : a.toLowerCase().localeCompare(b.toLowerCase());
+          : a.value.toLowerCase().localeCompare(b.value.toLowerCase());
       });
     default:
       return results;
@@ -102,9 +105,9 @@ const copyAllMatches = async () => {
     const data = await downloadResults();
     if (!data || data.length === 0) return;
 
-    copyToClipboard(sdk, data.join("\n"));
+    const values = data.map(match => match.value);
+    copyToClipboard(sdk, values.join("\n"));
   } catch (error) {
-    console.error("Error copying matches:", error);
     sdk.window.showToast("Error copying matches", { variant: "error" });
   } finally {
     isCopying.value = false;
@@ -119,7 +122,8 @@ const exportToFile = async () => {
     const data = await downloadResults();
     if (!data || data.length === 0) return;
 
-    const blob = new Blob([data.join("\n")], { type: "text/plain" });
+    const values = data.map(match => match.value);
+    const blob = new Blob([values.join("\n")], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -129,7 +133,6 @@ const exportToFile = async () => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   } catch (error) {
-    console.error("Error exporting results:", error);
     sdk.window.showToast("Error exporting results", { variant: "error" });
   } finally {
     isExporting.value = false;
@@ -146,6 +149,15 @@ const stopSearch = async () => {
   } finally {
     isStoppingSearch.value = false;
   }
+};
+
+const openMatchViewer = (match: MatchResult) => {
+  if (!match.requestId) return;
+  selectedMatch.value = match;
+};
+
+const closeMatchViewer = () => {
+  selectedMatch.value = null;
 };
 </script>
 
@@ -213,9 +225,10 @@ const stopSearch = async () => {
           >
             <template #item="{ item }">
               <div
-                class="p-1 bg-zinc-900/30 transition-colors select-text hover:bg-zinc-800/50"
+                class="p-1 bg-zinc-900/30 transition-colors select-text hover:bg-zinc-800/50 cursor-pointer"
+                @click="openMatchViewer(item)"
               >
-                {{ item }}
+                {{ item.value }}
               </div>
             </template>
             <template #content="{ items, loading }">
@@ -291,4 +304,10 @@ const stopSearch = async () => {
       </div>
     </template>
   </Card>
+
+  <MatchViewer
+    v-if="selectedMatch"
+    :match="selectedMatch"
+    @close="closeMatchViewer"
+  />
 </template>

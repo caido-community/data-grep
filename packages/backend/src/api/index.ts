@@ -44,7 +44,7 @@ export const stopGrep = async (): Promise<{
  * Returns all matches from the last completed grep operation
  */
 export const downloadResults = async (): Promise<{
-  data?: string[];
+  data?: import("shared").MatchResult[];
   error?: string;
 }> => {
   return grepService.downloadResults();
@@ -103,5 +103,38 @@ export const deleteCustomRegex = async (
     return { data: { success: true } };
   } catch (error) {
     return { error: handleValidationError(error) };
+  }
+};
+
+/**
+ * Get request/response data by request ID for the match viewer
+ */
+export const getRequestData = async (
+  sdk: CaidoBackendSDK,
+  requestId: string
+): Promise<{
+  data?: {
+    requestRaw: string;
+    responseRaw: string | null;
+  };
+  error?: string;
+}> => {
+  try {
+    const reqRes = await sdk.requests.get(requestId);
+    if (!reqRes) {
+      return { error: "Request not found" };
+    }
+
+    const requestRaw = reqRes.request.getRaw()?.toText() || "";
+    const responseRaw = reqRes.response?.getRaw()?.toText() || null;
+
+    return {
+      data: {
+        requestRaw,
+        responseRaw,
+      },
+    };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : String(error) };
   }
 };
