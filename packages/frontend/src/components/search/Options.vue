@@ -140,7 +140,7 @@ const matchGroupsString = computed({
         />
       </div>
 
-      <div>
+      <div class="min-w-[150px] sm:min-w-[250px] lg:min-w-[400px] flex-1">
         <label class="block mb-2.5 font-medium">
           Custom HTTPQL
           <i

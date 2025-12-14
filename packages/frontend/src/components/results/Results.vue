@@ -7,6 +7,7 @@ import { formatTime } from "@/utils/time";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Dropdown from "primevue/dropdown";
+import InputText from "primevue/inputtext";
 import VirtualScroller from "primevue/virtualscroller";
 import { computed, ref } from "vue";
 
@@ -23,6 +24,7 @@ type SortType =
   | "length-asc"
   | "length-desc";
 const currentSort = ref<SortType>("none");
+const resultsFilter = ref("");
 
 const sortOptions = [
   { label: "No sorting", value: "none", icon: "fas fa-list" },
@@ -54,10 +56,15 @@ const hasResults = computed(
   () => store.results.searchResults && store.results.searchResults?.length > 0
 );
 
-const sortedResults = computed(() => {
+const filteredAndSortedResults = computed(() => {
   if (!store.results.searchResults) return [];
 
-  const results = [...store.results.searchResults];
+  // First filter by search term
+  let results = [...store.results.searchResults];
+  if (resultsFilter.value.trim()) {
+    const searchTerm = resultsFilter.value.toLowerCase();
+    results = results.filter(item => item.toLowerCase().includes(searchTerm));
+  }
 
   switch (currentSort.value) {
     case "alphabetical-asc":
@@ -179,18 +186,30 @@ const stopSearch = async () => {
           </div>
         </div>
         <div class="flex flex-col gap-4 h-full">
-          <div class="flex justify-end items-center">
+          <div class="flex justify-between items-center gap-4">
+            <div class="relative flex-1">
+              <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+              <InputText
+                v-model="resultsFilter"
+                placeholder="Filter results..."
+                class="w-full pl-9"
+                :disabled="!hasResults"
+              />
+            </div>
             <div class="text-xs text-gray-500">
-              {{ sortedResults.length }} items
+              {{ filteredAndSortedResults.length }} items
+              <template v-if="resultsFilter.trim() && filteredAndSortedResults.length !== store.results.uniqueMatchesCount">
+                (filtered from {{ store.results.uniqueMatchesCount }})
+              </template>
             </div>
           </div>
           <VirtualScroller
             v-if="store.results.searchResults?.length"
-            :items="sortedResults"
+            :items="filteredAndSortedResults"
             :itemSize="24"
             class="w-full h-full border border-gray-700 transition-all duration-200"
             scrollHeight="100%"
-            :key="currentSort"
+            :key="currentSort + resultsFilter"
           >
             <template #item="{ item }">
               <div
