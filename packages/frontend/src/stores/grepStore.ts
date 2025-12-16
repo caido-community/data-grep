@@ -20,6 +20,7 @@ export const useGrepStore = defineStore("grep", () => {
     customHTTPQL: null,
     skipLargeResponses: true,
     cleanupOutput: true,
+    transformScript: null,
   });
 
   const status = reactive<GrepStatus>({

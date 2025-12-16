@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useSDK } from "@/plugins/sdk";
 import type { MatchResult } from "shared";
-import { ref, onMounted, onUnmounted, nextTick, computed } from "vue";
+import { ref, onMounted, nextTick, computed } from "vue";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 
@@ -90,7 +90,6 @@ const handleClose = () => {
 };
 
 onMounted(() => loadData());
-onUnmounted(() => {});
 </script>
 
 <template>
@@ -140,13 +139,13 @@ onUnmounted(() => {});
           <tr>
             <td style="vertical-align:top;padding-right:8px">
               <pre
-                style="height:400px;overflow:auto;background:#18181b;border:1px solid #27272a;border-radius:4px;padding:10px;margin:0;font-size:11px;font-family:ui-monospace,monospace;color:#d4d4d4;white-space:pre-wrap;word-break:break-all"
+                style="height:400px;overflow:auto;background:#0a0a0a;border:1px solid #27272a;border-radius:4px;padding:10px;margin:0;font-size:11px;font-family:ui-monospace,monospace;color:#d4d4d4;white-space:pre-wrap;word-break:break-all"
                 v-html="highlightedRequest"
               ></pre>
             </td>
             <td v-if="responseRaw" style="vertical-align:top;padding-left:8px">
               <pre
-                style="height:400px;overflow:auto;background:#18181b;border:1px solid #27272a;border-radius:4px;padding:10px;margin:0;font-size:11px;font-family:ui-monospace,monospace;color:#d4d4d4;white-space:pre-wrap;word-break:break-all"
+                style="height:400px;overflow:auto;background:#0a0a0a;border:1px solid #27272a;border-radius:4px;padding:10px;margin:0;font-size:11px;font-family:ui-monospace,monospace;color:#d4d4d4;white-space:pre-wrap;word-break:break-all"
                 v-html="highlightedResponse"
               ></pre>
             </td>
