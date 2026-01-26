@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useSDK } from "@/plugins/sdk";
 import type { MatchResult } from "shared";
-import { ref, onMounted, onUnmounted, nextTick, computed } from "vue";
+import { ref, onMounted, nextTick, computed } from "vue";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
+import DOMPurify from "dompurify";
 
 const props = defineProps<{
   match: MatchResult;
@@ -31,30 +32,36 @@ const escapeHtml = (text: string): string => {
 
 const highlightedRequest = computed(() => {
   if (!requestRaw.value) return "";
-  if (props.match.source !== "request") return escapeHtml(requestRaw.value);
+  if (props.match.source !== "request") return DOMPurify.sanitize(escapeHtml(requestRaw.value));
   const text = requestRaw.value;
   const { startIndex, endIndex } = props.match;
   if (startIndex >= 0 && endIndex <= text.length && startIndex < endIndex) {
     const before = escapeHtml(text.slice(0, startIndex));
     const matched = escapeHtml(text.slice(startIndex, endIndex));
     const after = escapeHtml(text.slice(endIndex));
-    return `${before}<mark style="background:#dc2626;color:#fff;padding:1px 3px;border-radius:2px;font-weight:600" id="grep-match-highlight">${matched}</mark>${after}`;
+    return DOMPurify.sanitize(
+      `${before}<mark class="bg-red-600 text-white px-[3px] py-[1px] rounded-[2px] font-semibold" id="grep-match-highlight">${matched}</mark>${after}`,
+      { ADD_ATTR: ["class", "id"] }
+    );
   }
-  return escapeHtml(text);
+  return DOMPurify.sanitize(escapeHtml(text));
 });
 
 const highlightedResponse = computed(() => {
   if (!responseRaw.value) return "";
-  if (props.match.source !== "response") return escapeHtml(responseRaw.value);
+  if (props.match.source !== "response") return DOMPurify.sanitize(escapeHtml(responseRaw.value));
   const text = responseRaw.value;
   const { startIndex, endIndex } = props.match;
   if (startIndex >= 0 && endIndex <= text.length && startIndex < endIndex) {
     const before = escapeHtml(text.slice(0, startIndex));
     const matched = escapeHtml(text.slice(startIndex, endIndex));
     const after = escapeHtml(text.slice(endIndex));
-    return `${before}<mark style="background:#dc2626;color:#fff;padding:1px 3px;border-radius:2px;font-weight:600" id="grep-match-highlight">${matched}</mark>${after}`;
+    return DOMPurify.sanitize(
+      `${before}<mark class="bg-red-600 text-white px-[3px] py-[1px] rounded-[2px] font-semibold" id="grep-match-highlight">${matched}</mark>${after}`,
+      { ADD_ATTR: ["class", "id"] }
+    );
   }
-  return escapeHtml(text);
+  return DOMPurify.sanitize(escapeHtml(text));
 });
 
 const scrollToHighlight = () => {
@@ -90,65 +97,56 @@ const handleClose = () => {
 };
 
 onMounted(() => loadData());
-onUnmounted(() => {});
 </script>
 
 <template>
-  <Dialog
-    v-model:visible="visible"
-    :header="`Request #${match.requestId}`"
-    :modal="true"
-    :closable="true"
-    :draggable="false"
-    :style="{ width: '85vw', maxWidth: '1200px' }"
-    @hide="handleClose"
-  >
-    <div style="display:flex;flex-direction:column;gap:12px">
-      <div style="padding:8px 12px;background:#27272a;border-radius:6px;font-size:13px;display:flex;align-items:center;justify-content:space-between">
-        <div style="color:#9ca3af">
+  <Dialog v-model:visible="visible" :header="`Request #${match.requestId}`" :modal="true" :closable="true"
+    :draggable="false" :style="{ width: '85vw', maxWidth: '1200px' }" @hide="handleClose">
+    <div class="flex flex-col gap-3">
+      <div class="px-3 py-2 bg-zinc-800 rounded-md text-[13px] flex items-center justify-between">
+        <div class="text-gray-400">
           Match found in
-          <span style="color:#ef4444;font-weight:600;margin:0 4px">{{ match.source }}</span>
+          <span class="text-red-500 font-semibold mx-1">{{ match.source }}</span>
           at position {{ match.startIndex }}-{{ match.endIndex }}
         </div>
-        <div style="font-family:ui-monospace,monospace;font-size:11px;background:#18181b;padding:4px 8px;border-radius:4px;color:#ef4444;max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+        <div
+          class="font-mono text-[11px] bg-zinc-900 px-2 py-1 rounded-md text-red-500 max-w-[400px] overflow-hidden text-ellipsis whitespace-nowrap">
           {{ match.value }}
         </div>
       </div>
 
-      <div v-if="isLoading" style="text-align:center;padding:48px 0;color:#9ca3af">
-        <i class="fas fa-spinner fa-spin" style="margin-right:8px"></i>Loading...
+      <div v-if="isLoading" class="text-center py-12 text-gray-400">
+        <i class="fas fa-spinner fa-spin mr-2"></i>Loading...
       </div>
 
-      <div v-else-if="error" style="text-align:center;padding:48px 0;color:#ef4444">
-        <i class="fas fa-exclamation-triangle" style="margin-right:8px"></i>{{ error }}
+      <div v-else-if="error" class="text-center py-12 text-red-500">
+        <i class="fas fa-exclamation-triangle mr-2"></i>{{ error }}
       </div>
 
-      <table v-else style="width:100%;border-collapse:collapse;table-layout:fixed">
+      <table v-else class="w-full border-collapse table-fixed">
         <thead>
           <tr>
-            <th style="text-align:left;padding:6px 0;font-size:11px;font-weight:600;color:#9ca3af;width:50%">
-              <i class="fas fa-arrow-up" style="margin-right:4px"></i>Request
-              <span v-if="match.source === 'request'" style="color:#ef4444;margin-left:4px">(match)</span>
+            <th class="text-left py-1.5 text-[11px] font-semibold text-gray-400 w-1/2">
+              <i class="fas fa-arrow-up mr-1"></i>Request
+              <span v-if="match.source === 'request'" class="text-red-500 ml-1">(match)</span>
             </th>
-            <th v-if="responseRaw" style="text-align:left;padding:6px 0;font-size:11px;font-weight:600;color:#9ca3af;width:50%">
-              <i class="fas fa-arrow-down" style="margin-right:4px"></i>Response
-              <span v-if="match.source === 'response'" style="color:#ef4444;margin-left:4px">(match)</span>
+            <th v-if="responseRaw" class="text-left py-1.5 text-[11px] font-semibold text-gray-400 w-1/2">
+              <i class="fas fa-arrow-down mr-1"></i>Response
+              <span v-if="match.source === 'response'" class="text-red-500 ml-1">(match)</span>
             </th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td style="vertical-align:top;padding-right:8px">
+            <td class="align-top pr-2">
               <pre
-                style="height:400px;overflow:auto;background:#18181b;border:1px solid #27272a;border-radius:4px;padding:10px;margin:0;font-size:11px;font-family:ui-monospace,monospace;color:#d4d4d4;white-space:pre-wrap;word-break:break-all"
-                v-html="highlightedRequest"
-              ></pre>
+                class="h-[400px] overflow-auto bg-[#18181b] border border-[#27272a] rounded p-2.5 m-0 text-[11px] font-mono text-[#d4d4d4] whitespace-pre-wrap break-all"
+                v-html="highlightedRequest"></pre>
             </td>
-            <td v-if="responseRaw" style="vertical-align:top;padding-left:8px">
+            <td v-if="responseRaw" class="align-top pl-2">
               <pre
-                style="height:400px;overflow:auto;background:#18181b;border:1px solid #27272a;border-radius:4px;padding:10px;margin:0;font-size:11px;font-family:ui-monospace,monospace;color:#d4d4d4;white-space:pre-wrap;word-break:break-all"
-                v-html="highlightedResponse"
-              ></pre>
+                class="h-[400px] overflow-auto bg-[#18181b] border border-[#27272a] rounded p-2.5 m-0 text-[11px] font-mono text-[#d4d4d4] whitespace-pre-wrap break-all"
+                v-html="highlightedResponse"></pre>
             </td>
           </tr>
         </tbody>

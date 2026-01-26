@@ -2,7 +2,7 @@ import { useSDK } from "@/plugins/sdk";
 import { useGrepRepository } from "@/repositories/grep";
 import { formatTime } from "@/utils/time";
 import { defineStore } from "pinia";
-import type { GrepOptions, GrepResults, GrepStatus } from "shared";
+import type { GrepOptions, GrepResults, GrepStatus, MatchResult } from "shared";
 import { reactive, ref } from "vue";
 
 export const useGrepStore = defineStore("grep", () => {
@@ -95,7 +95,7 @@ export const useGrepStore = defineStore("grep", () => {
     status.progress = value;
   });
 
-  sdk.backend.onEvent("caidogrep:matches", (matches: number | import("shared").MatchResult[]) => {
+  sdk.backend.onEvent("caidogrep:matches", (matches: number | MatchResult[]) => {
     if (typeof matches === "number") {
       results.uniqueMatchesCount += matches;
     } else {
