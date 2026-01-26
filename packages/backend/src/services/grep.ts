@@ -1,5 +1,5 @@
 import type { Request, RequestsQuery, Response } from "caido:utils";
-import type { GrepOptions } from "shared";
+import type { GrepOptions, MatchResult } from "shared";
 import type { CaidoBackendSDK } from "../types";
 import {
   buildRegexFilter,
@@ -14,17 +14,24 @@ let isGrepActive = false;
 let stopPromise: Promise<void> | null = null;
 let stopResolve: (() => void) | null = null;
 
-// Store for grep matches
+// Store for grep matches - uses value as key for deduplication, stores full MatchResult
 const grepStore = {
-  matches: new Set<string>(),
+  matches: new Map<string, MatchResult>(),
   clear() {
     this.matches.clear();
   },
-  addMatch(match: string) {
-    this.matches.add(match);
+  addMatch(match: MatchResult): boolean {
+    if (!this.matches.has(match.value)) {
+      this.matches.set(match.value, match);
+      return true;
+    }
+    return false;
   },
-  getMatches() {
-    return Array.from(this.matches);
+  getMatches(): MatchResult[] {
+    return Array.from(this.matches.values());
+  },
+  getValues(): string[] {
+    return Array.from(this.matches.keys());
   },
 };
 
@@ -98,7 +105,7 @@ export const grepService = {
    * Returns all matches from the last completed grep operation
    */
   async downloadResults(): Promise<{
-    data?: string[];
+    data?: MatchResult[];
     error?: string;
   }> {
     if (grepStore.matches.size === 0) {
@@ -171,7 +178,7 @@ export const grepService = {
       onlyInScope = true,
     } = options;
 
-    const matches: Set<string> = new Set();
+    const matches: Map<string, MatchResult> = new Map();
     const regexFilter = buildRegexFilter(regex, options);
 
     let hasNextPage = true;
@@ -229,7 +236,6 @@ export const grepService = {
         }
 
         const newMatches = this.findMatchesInRequestResponse(
-          sdk,
           item.request,
           item.response,
           regex,
@@ -239,24 +245,28 @@ export const grepService = {
         );
 
         if (newMatches.length > 0) {
-          for (const content of newMatches) {
-            let processedContent = content.trim();
+          for (const matchResult of newMatches) {
+            const processedValue = matchResult.value.trim();
 
             // Skip matches with non-printable characters if cleanup is enabled
             if (
               options.cleanupOutput &&
-              /[^\x20-\x7E]/.test(processedContent)
+              /[^\x20-\x7E]/.test(processedValue)
             ) {
               continue;
             }
 
-            if (processedContent.length === 0) {
+            if (processedValue.length === 0) {
               continue;
             }
 
-            if (!matches.has(processedContent)) {
-              matches.add(processedContent);
-              grepStore.addMatch(processedContent);
+            if (!matches.has(processedValue)) {
+              const finalMatch: MatchResult = {
+                ...matchResult,
+                value: processedValue,
+              };
+              matches.set(processedValue, finalMatch);
+              grepStore.addMatch(finalMatch);
               if (maxResults && matches.size >= maxResults) {
                 break;
               }
@@ -267,11 +277,11 @@ export const grepService = {
 
       // Send new matches if any were found
       if (matches.size > sentMatchCount) {
-        const newMatches = Array.from(matches).slice(sentMatchCount);
+        const newMatchResults = Array.from(matches.values()).slice(sentMatchCount);
         if (sentMatchCount > 25000) {
-          sdk.api.send("caidogrep:matches", newMatches.length);
+          sdk.api.send("caidogrep:matches", newMatchResults.length);
         } else {
-          sdk.api.send("caidogrep:matches", newMatches);
+          sdk.api.send("caidogrep:matches", newMatchResults);
         }
         sentMatchCount = matches.size;
       }
@@ -290,15 +300,15 @@ export const grepService = {
    * Searches for regex matches in both request and response data
    */
   findMatchesInRequestResponse(
-    sdk: CaidoBackendSDK,
     request: Request,
     response: Response | undefined,
     regex: RegExp,
     matchGroups: number[] | null,
     includeRequests: boolean,
     includeResponses: boolean
-  ): string[] {
-    const contentMatches: string[] = [];
+  ): MatchResult[] {
+    const requestId = String(request.getId());
+    const contentMatches: MatchResult[] = [];
 
     if (includeRequests) {
       const rawMatches = extractMatches(
@@ -306,8 +316,14 @@ export const grepService = {
         regex,
         matchGroups
       );
-      if (rawMatches) {
-        contentMatches.push(...rawMatches);
+      for (const extracted of rawMatches) {
+        contentMatches.push({
+          value: extracted.value,
+          requestId,
+          source: "request",
+          startIndex: extracted.startIndex,
+          endIndex: extracted.endIndex,
+        });
       }
     }
 
@@ -317,11 +333,14 @@ export const grepService = {
         regex,
         matchGroups
       );
-
-      if (responseRawMatches) {
-        for (const match of responseRawMatches) {
-          contentMatches.push(match);
-        }
+      for (const extracted of responseRawMatches) {
+        contentMatches.push({
+          value: extracted.value,
+          requestId,
+          source: "response",
+          startIndex: extracted.startIndex,
+          endIndex: extracted.endIndex,
+        });
       }
     }
 

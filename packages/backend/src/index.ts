@@ -6,6 +6,7 @@ import {
   upsertCustomRegex,
   listCustomRegexes,
   deleteCustomRegex,
+  getRequestData,
 } from "./api";
 import { initStorageService } from "./services/storage";
 import type { BackendEvents } from "./types";
@@ -19,6 +20,7 @@ export type API = DefineAPI<{
   upsertCustomRegex: typeof upsertCustomRegex;
   listCustomRegexes: typeof listCustomRegexes;
   deleteCustomRegex: typeof deleteCustomRegex;
+  getRequestData: typeof getRequestData;
 }>;
 
 export function init(sdk: SDK<API, BackendEvents>) {
@@ -30,4 +32,5 @@ export function init(sdk: SDK<API, BackendEvents>) {
   sdk.api.register("upsertCustomRegex", upsertCustomRegex);
   sdk.api.register("listCustomRegexes", listCustomRegexes);
   sdk.api.register("deleteCustomRegex", deleteCustomRegex);
+  sdk.api.register("getRequestData", getRequestData);
 }
