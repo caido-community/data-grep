@@ -93,23 +93,18 @@ onMounted(() => loadData());
 </script>
 
 <template>
-  <Dialog
-    v-model:visible="visible"
-    :header="`Request #${match.requestId}`"
-    :modal="true"
-    :closable="true"
-    :draggable="false"
-    :style="{ width: '85vw', maxWidth: '1200px' }"
-    @hide="handleClose"
-  >
+  <Dialog v-model:visible="visible" :header="`Request #${match.requestId}`" :modal="true" :closable="true"
+    :draggable="false" :style="{ width: '85vw', maxWidth: '1200px' }" @hide="handleClose">
     <div style="display:flex;flex-direction:column;gap:12px">
-      <div style="padding:8px 12px;background:#27272a;border-radius:6px;font-size:13px;display:flex;align-items:center;justify-content:space-between">
+      <div
+        style="padding:8px 12px;background:#27272a;border-radius:6px;font-size:13px;display:flex;align-items:center;justify-content:space-between">
         <div style="color:#9ca3af">
           Match found in
           <span style="color:#ef4444;font-weight:600;margin:0 4px">{{ match.source }}</span>
           at position {{ match.startIndex }}-{{ match.endIndex }}
         </div>
-        <div style="font-family:ui-monospace,monospace;font-size:11px;background:#18181b;padding:4px 8px;border-radius:4px;color:#ef4444;max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+        <div
+          style="font-family:ui-monospace,monospace;font-size:11px;background:#18181b;padding:4px 8px;border-radius:4px;color:#ef4444;max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
           {{ match.value }}
         </div>
       </div>
@@ -129,7 +124,8 @@ onMounted(() => loadData());
               <i class="fas fa-arrow-up" style="margin-right:4px"></i>Request
               <span v-if="match.source === 'request'" style="color:#ef4444;margin-left:4px">(match)</span>
             </th>
-            <th v-if="responseRaw" style="text-align:left;padding:6px 0;font-size:11px;font-weight:600;color:#9ca3af;width:50%">
+            <th v-if="responseRaw"
+              style="text-align:left;padding:6px 0;font-size:11px;font-weight:600;color:#9ca3af;width:50%">
               <i class="fas fa-arrow-down" style="margin-right:4px"></i>Response
               <span v-if="match.source === 'response'" style="color:#ef4444;margin-left:4px">(match)</span>
             </th>
@@ -140,14 +136,12 @@ onMounted(() => loadData());
             <td style="vertical-align:top;padding-right:8px">
               <pre
                 style="height:400px;overflow:auto;background:#0a0a0a;border:1px solid #27272a;border-radius:4px;padding:10px;margin:0;font-size:11px;font-family:ui-monospace,monospace;color:#d4d4d4;white-space:pre-wrap;word-break:break-all"
-                v-html="highlightedRequest"
-              ></pre>
+                v-html="highlightedRequest"></pre>
             </td>
             <td v-if="responseRaw" style="vertical-align:top;padding-left:8px">
               <pre
                 style="height:400px;overflow:auto;background:#0a0a0a;border:1px solid #27272a;border-radius:4px;padding:10px;margin:0;font-size:11px;font-family:ui-monospace,monospace;color:#d4d4d4;white-space:pre-wrap;word-break:break-all"
-                v-html="highlightedResponse"
-              ></pre>
+                v-html="highlightedResponse"></pre>
             </td>
           </tr>
         </tbody>
