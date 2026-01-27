@@ -3,8 +3,10 @@ import { GuideContainer } from "@/components/guide";
 import { useAIStore, useGrepStore, useGuideStore, usePatternsStore } from "@/stores";
 import Button from "primevue/button";
 import Divider from "primevue/divider";
+import { ref } from "vue";
 import Options from "./Options.vue";
 import Search from "./Search.vue";
+import TransformScriptDialog from "./TransformScriptDialog.vue";
 import { AIDialogContainer } from "./ai-dialog";
 import { PatternsDialogContainer } from "./patterns";
 
@@ -12,6 +14,11 @@ const grepStore = useGrepStore();
 const aiStore = useAIStore();
 const patternsStore = usePatternsStore();
 const guideStore = useGuideStore();
+const transformDialogRef = ref<InstanceType<typeof TransformScriptDialog> | null>(null);
+
+const openTransformDialog = () => {
+  transformDialogRef.value?.open();
+};
 </script>
 
 <template>
@@ -52,6 +59,13 @@ const guideStore = useGuideStore();
           class="p-button-secondary"
           @click="patternsStore.openDialog"
         />
+        <Button
+          label="Transform"
+          icon="fas fa-cog"
+          class="p-button-secondary"
+          :disabled="grepStore.options.transformScript === null"
+          @click="openTransformDialog"
+        />
       </div>
       <Button
         label="Guide"
@@ -66,5 +80,6 @@ const guideStore = useGuideStore();
     <AIDialogContainer />
     <PatternsDialogContainer />
     <GuideContainer />
+    <TransformScriptDialog ref="transformDialogRef" />
   </div>
 </template>

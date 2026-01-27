@@ -35,6 +35,17 @@ const grepStore = {
   },
 };
 
+function applyTransform(value: string, script: string): string | null {
+  try {
+    const fn = new Function("match", script);
+    const result = fn(value);
+    if (result === null || result === undefined) return null;
+    return typeof result === "string" ? result : String(result);
+  } catch {
+    return value;
+  }
+}
+
 export const grepService = {
   /**
    * Search through requests and responses based on a regex pattern
@@ -246,18 +257,21 @@ export const grepService = {
 
         if (newMatches.length > 0) {
           for (const matchResult of newMatches) {
-            const processedValue = matchResult.value.trim();
+            let processedValue = matchResult.value.trim();
 
-            // Skip matches with non-printable characters if cleanup is enabled
-            if (
-              options.cleanupOutput &&
-              /[^\x20-\x7E]/.test(processedValue)
-            ) {
+            if (options.cleanupOutput && /[^\x20-\x7E]/.test(processedValue)) {
               continue;
             }
 
             if (processedValue.length === 0) {
               continue;
+            }
+
+            if (options.transformScript) {
+              const transformed = applyTransform(processedValue, options.transformScript);
+              if (transformed === null) continue;
+              processedValue = transformed.trim();
+              if (processedValue.length === 0) continue;
             }
 
             if (!matches.has(processedValue)) {

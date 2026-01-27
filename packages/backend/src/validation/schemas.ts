@@ -31,6 +31,7 @@ export const GrepOptionsSchema = z.object({
   skipLargeResponses: z.boolean(),
   customHTTPQL: z.string().nullable(),
   cleanupOutput: z.boolean(),
+  transformScript: z.string().nullable(),
 });
 
 export const RegexIdSchema = z

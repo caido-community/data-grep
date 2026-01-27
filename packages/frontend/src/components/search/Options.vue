@@ -9,6 +9,13 @@ import { computed } from "vue";
 const grepStore = useGrepStore();
 const isSmallScreen = useMediaQuery("(max-width: 900px)");
 
+const transformEnabled = computed({
+  get: () => grepStore.options.transformScript !== null,
+  set: (val: boolean) => {
+    grepStore.options.transformScript = val ? "" : null;
+  }
+});
+
 const matchGroupsString = computed({
   get: () => {
     if (!grepStore.options.matchGroups) return "";
@@ -19,13 +26,11 @@ const matchGroupsString = computed({
       grepStore.options.matchGroups = null;
       return;
     }
-
     const groups = value.split(",")
       .map(g => g.trim())
       .filter(g => g !== "")
       .map(g => parseInt(g))
       .filter(g => !isNaN(g));
-
     grepStore.options.matchGroups = groups.length ? groups : null;
   }
 });
@@ -77,14 +82,10 @@ const matchGroupsString = computed({
             :binary="true"
             inputId="skipLargeResponses"
           />
-          <label for="skipLargeResponses" class="ml-3"
-            >Skip Large Responses</label
-          >
+          <label for="skipLargeResponses" class="ml-3">Skip Large Responses</label>
           <i
             class="fas fa-info-circle ml-2 text-gray-500"
-            v-tooltip.right="
-              'Skip responses larger than 10MB. This should be always used to avoid performance issues'
-            "
+            v-tooltip.right="'Skip responses larger than 10MB'"
           ></i>
         </div>
 
@@ -97,9 +98,20 @@ const matchGroupsString = computed({
           <label for="cleanupOutput" class="ml-3">Cleanup output</label>
           <i
             class="fas fa-info-circle ml-2 text-gray-500"
-            v-tooltip.right="
-              'Remove all non-printable characters from the output'
-            "
+            v-tooltip.right="'Remove non-printable characters from output'"
+          ></i>
+        </div>
+
+        <div class="flex items-center">
+          <Checkbox
+            v-model="transformEnabled"
+            :binary="true"
+            inputId="transformEnabled"
+          />
+          <label for="transformEnabled" class="ml-3">Transform Results</label>
+          <i
+            class="fas fa-info-circle ml-2 text-gray-500"
+            v-tooltip.right="'Enable to use JavaScript transform on matches (configure via Transform button)'"
           ></i>
         </div>
       </div>
@@ -110,9 +122,7 @@ const matchGroupsString = computed({
           Match Groups
           <i
             class="fas fa-info-circle ml-1 text-gray-500"
-            v-tooltip.right="
-              'Extract specific groups from regex match. Separate groups with commas. Leave empty to extract entire match'
-            "
+            v-tooltip.right="'Extract specific groups from regex match. Separate groups with commas.'"
           ></i>
         </label>
         <InputText
@@ -127,9 +137,7 @@ const matchGroupsString = computed({
           Max Results
           <i
             class="fas fa-info-circle ml-1 text-gray-500"
-            v-tooltip.right="
-              'Maximum number of results to return. Leave empty for no limit'
-            "
+            v-tooltip.right="'Maximum number of results to return. Leave empty for no limit'"
           ></i>
         </label>
         <InputNumber
