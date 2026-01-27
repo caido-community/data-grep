@@ -1,4 +1,4 @@
-import type { GrepOptions, CustomRegex } from "shared";
+import type { GrepOptions, CustomRegex, MatchResult } from "shared";
 import { grepService } from "../services/grep";
 import { getStorageService } from "../services/storage";
 import type { CaidoBackendSDK } from "../types";
@@ -44,7 +44,7 @@ export const stopGrep = async (): Promise<{
  * Returns all matches from the last completed grep operation
  */
 export const downloadResults = async (): Promise<{
-  data?: import("shared").MatchResult[];
+  data?: MatchResult[];
   error?: string;
 }> => {
   return grepService.downloadResults();
