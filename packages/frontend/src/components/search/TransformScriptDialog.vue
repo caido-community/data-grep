@@ -62,17 +62,17 @@ defineExpose({ open });
   </Dialog>
 </template>
 
-<style>
-.cm-editor {
+<style scoped>
+:deep(.cm-editor) {
   font-size: 14px !important;
 }
 
-.cm-content {
+:deep(.cm-content) {
   font-family: ui-monospace, monospace !important;
 }
 
 /* Fix autocomplete tooltip positioning */
-.cm-tooltip-autocomplete {
+:deep(.cm-tooltip-autocomplete) {
   position: fixed !important;
   z-index: 9999 !important;
 }
