@@ -7,6 +7,7 @@ export interface GrepOptions {
   skipLargeResponses: boolean;
   customHTTPQL: string | null;
   cleanupOutput: boolean;
+  transformScript: string | null;
 }
 
 export interface GrepStatus {
