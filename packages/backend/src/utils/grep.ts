@@ -81,7 +81,8 @@ export function extractMatches(
 ): ExtractedMatch[] {
   if (!text) return [];
 
-  const matches = Array.from(text.matchAll(new RegExp(regex, "g")));
+  const flags = regex.flags.includes('g') ? regex.flags : regex.flags + 'g';
+  const matches = Array.from(text.matchAll(new RegExp(regex.source, flags)));
   if (!matches.length) return [];
 
   const results: ExtractedMatch[] = [];

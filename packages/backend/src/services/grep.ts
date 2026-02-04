@@ -144,7 +144,7 @@ export const grepService = {
       return { error: "No requests found" };
     }
 
-    const regex = new RegExp(pattern, "i");
+    const regex = new RegExp(pattern, "is");
     let matchesCount = 0;
 
     sdk.api.send("caidogrep:progress", 0);
@@ -216,10 +216,15 @@ export const grepService = {
 
       // Execute the query with cancellation check
       const queryPromise = query.execute();
-      const result = await executeQueryWithCancellationCheck(
-        queryPromise,
-        () => isGrepActive
-      );
+      let result;
+      try {
+        result = await executeQueryWithCancellationCheck(
+          queryPromise,
+          () => isGrepActive
+        );
+      } catch (queryError) {
+        throw queryError;
+      }
 
       if (!isGrepActive) {
         if (stopResolve) {
@@ -227,6 +232,7 @@ export const grepService = {
         }
         throw new Error("Grep operation was stopped");
       }
+
 
       // Process each result
       for (const item of result.items) {
@@ -254,6 +260,7 @@ export const grepService = {
           includeRequests,
           includeResponses
         );
+
 
         if (newMatches.length > 0) {
           for (const matchResult of newMatches) {
