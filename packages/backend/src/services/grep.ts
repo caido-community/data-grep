@@ -55,7 +55,11 @@ export const grepService = {
     pattern: string,
     options: GrepOptions
   ): Promise<{
-    data?: { matchesCount?: number; timeTaken?: number };
+    data?: {
+      matchesCount?: number;
+      timeTaken?: number;
+      error?: string;
+    };
     error?: string;
   }> {
     if (isGrepActive) {
