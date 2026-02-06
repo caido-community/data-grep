@@ -18,7 +18,11 @@ export const grepRequests = async (
   pattern: string,
   options: GrepOptions
 ): Promise<{
-  data?: { matchesCount?: number; timeTaken?: number };
+  data?: {
+    matchesCount?: number;
+    timeTaken?: number;
+    error?: string;
+  };
   error?: string;
 }> => {
   try {
