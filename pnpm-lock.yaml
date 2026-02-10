@@ -34,7 +34,7 @@ importers:
     dependencies:
       zod:
         specifier: ^3.25.30
-        version: 3.25.30
+        version: 3.25.76
     devDependencies:
       '@caido/sdk-backend':
         specifier: ^0.47.1
