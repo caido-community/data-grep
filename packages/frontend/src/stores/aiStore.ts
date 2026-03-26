@@ -1,7 +1,12 @@
 import { useSDK } from "@/plugins/sdk";
-import { askOpenAI, SYSTEM_PROMPT } from "@/utils/ai";
+import {
+  generateRegexPattern,
+  getAvailableModelGroups,
+  type Model,
+  type ModelGroup,
+} from "@/utils/ai";
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useGrepStore } from "./grepStore";
 
 export const useAIStore = defineStore("ai", () => {
@@ -11,11 +16,33 @@ export const useAIStore = defineStore("ai", () => {
   const dialogVisible = ref(false);
   const prompt = ref("");
   const isProcessing = ref(false);
-  const apiKey = ref("");
+  const selectedModel = ref<Model | undefined>();
+
+  const availableModelGroups = computed<ModelGroup[]>(() =>
+    getAvailableModelGroups(sdk),
+  );
+
+  const hasAvailableProviders = computed(
+    () => availableModelGroups.value.length > 0,
+  );
 
   function openDialog() {
     dialogVisible.value = true;
-    refreshApiKey();
+
+    const groups = availableModelGroups.value;
+    const allModels = groups.flatMap((g) => g.models);
+
+    const currentStillAvailable =
+      selectedModel.value &&
+      allModels.some(
+        (m) =>
+          m.id === selectedModel.value!.id &&
+          m.provider === selectedModel.value!.provider,
+      );
+
+    if (!currentStillAvailable && allModels.length > 0) {
+      selectedModel.value = allModels[0];
+    }
   }
 
   function closeDialog() {
@@ -23,17 +50,9 @@ export const useAIStore = defineStore("ai", () => {
     prompt.value = "";
   }
 
-  function refreshApiKey() {
-    apiKey.value = sdk.env.getVar("OPENAI_API_KEY") || "";
-  }
-
-  function getApiKey() {
-    return apiKey.value;
-  }
-
   async function processAIPrompt() {
-    if (!apiKey.value) {
-      sdk.window.showToast("No API key found", { variant: "error" });
+    if (!selectedModel.value) {
+      sdk.window.showToast("No AI model selected", { variant: "error" });
       return;
     }
 
@@ -45,31 +64,23 @@ export const useAIStore = defineStore("ai", () => {
     isProcessing.value = true;
     dialogVisible.value = false;
 
-    let count = 0;
-
     try {
-      await askOpenAI(
-        apiKey.value,
+      const { pattern, matchGroup } = await generateRegexPattern(
+        sdk,
+        selectedModel.value,
         prompt.value,
-        SYSTEM_PROMPT,
-        (content: string) => {
-          if (count === 0) {
-            grepStore.pattern = content;
-          } else {
-            grepStore.options.matchGroups = [parseInt(content) || 0];
-          }
-
-          count++;
-        }
       );
+
+      grepStore.pattern = pattern;
+      grepStore.options.matchGroups = [matchGroup];
 
       sdk.window.showToast("AI pattern generated successfully", {
         variant: "success",
       });
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      sdk.window.showToast("Failed to generate pattern: " + errorMessage, {
+      const message =
+        error instanceof Error ? error.message : "Unknown error occurred";
+      sdk.window.showToast(`Failed to generate pattern: ${message}`, {
         variant: "error",
       });
     } finally {
@@ -81,11 +92,11 @@ export const useAIStore = defineStore("ai", () => {
     dialogVisible,
     prompt,
     isProcessing,
-    apiKey,
+    selectedModel,
+    availableModelGroups,
+    hasAvailableProviders,
     openDialog,
     closeDialog,
     processAIPrompt,
-    getApiKey,
-    refreshApiKey,
   };
 });

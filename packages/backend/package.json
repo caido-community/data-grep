@@ -9,7 +9,7 @@
     "test:watch": "vitest"
   },
   "devDependencies": {
-    "@caido/sdk-backend": "^0.47.1",
+    "@caido/sdk-backend": "0.55.3",
     "shared": "workspace:*",
     "vitest": "^2.1.0"
   },
