@@ -6,7 +6,6 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "@ai-sdk/provider": "3.0.8",
     "@caido/primevue": "0.1.11",
     "@codemirror/autocomplete": "6.20.0",
     "@codemirror/lang-javascript": "6.2.4",
@@ -19,7 +18,8 @@
     "pinia": "3.0.2",
     "primevue": "4.3.3",
     "vue": "3.5.13",
-    "vue-codemirror": "6.1.1"
+    "vue-codemirror": "6.1.1",
+    "zod": "3.25.30"
   },
   "devDependencies": {
     "@caido/sdk-backend": "0.55.3",
