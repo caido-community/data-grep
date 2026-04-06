@@ -12,7 +12,7 @@ export default defineConfig({
   id,
   name: "Data Grep",
   description: "Extract data from your requests and responses",
-  version: "1.2.2",
+  version: "1.2.3",
   author: {
     name: "Caido Labs Inc.",
     email: "dev@caido.io",
