@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { useAIStore } from "@/stores";
 import Dialog from "primevue/dialog";
+
 import AIDialog from "./AIDialog.vue";
 import NoProviders from "./NoProviders.vue";
+
+import { useAIStore } from "@/stores";
 
 const aiStore = useAIStore();
 </script>

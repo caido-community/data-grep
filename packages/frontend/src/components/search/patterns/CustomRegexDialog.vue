@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
-import { usePatternsStore } from "@/stores";
+import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
-import Button from "primevue/button";
+import { computed, ref, watch } from "vue";
+
+import { usePatternsStore } from "@/stores";
 
 const patternsStore = usePatternsStore();
 
@@ -53,7 +54,7 @@ watch(
       }
       clearErrors();
     }
-  }
+  },
 );
 
 function clearErrors() {

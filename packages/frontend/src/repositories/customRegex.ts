@@ -1,5 +1,6 @@
-import { useSDK } from "@/plugins/sdk";
 import type { CustomRegex } from "shared";
+
+import { useSDK } from "@/plugins/sdk";
 
 export const useCustomRegexRepository = () => {
   const sdk = useSDK();
@@ -7,23 +8,21 @@ export const useCustomRegexRepository = () => {
   const listCustomRegexes = async () => {
     const { data, error } = await sdk.backend.listCustomRegexes();
 
-    if (error) {
-      console.error("Error while listing custom regexes:", error);
-      sdk.window.showToast("Error while listing custom regexes: " + error, {
+    if (error !== undefined) {
+      sdk.window.showToast(`Error while listing custom regexes: ${error}`, {
         variant: "error",
       });
       return [];
     }
 
-    return data || [];
+    return data ?? [];
   };
 
   const upsertCustomRegex = async (id: string, regex: CustomRegex) => {
     const { error } = await sdk.backend.upsertCustomRegex(id, regex);
 
-    if (error) {
-      console.error("Error while saving custom regex:", error);
-      sdk.window.showToast("Error while saving custom regex: " + error, {
+    if (error !== undefined) {
+      sdk.window.showToast(`Error while saving custom regex: ${error}`, {
         variant: "error",
       });
       return false;
@@ -38,9 +37,8 @@ export const useCustomRegexRepository = () => {
   const deleteCustomRegex = async (id: string) => {
     const { error } = await sdk.backend.deleteCustomRegex(id);
 
-    if (error) {
-      console.error("Error while deleting custom regex:", error);
-      sdk.window.showToast("Error while deleting custom regex: " + error, {
+    if (error !== undefined) {
+      sdk.window.showToast(`Error while deleting custom regex: ${error}`, {
         variant: "error",
       });
       return false;

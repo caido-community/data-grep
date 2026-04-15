@@ -1,11 +1,13 @@
 import { defineStore } from "pinia";
-import { ref, reactive, computed } from "vue";
-import { useSDK } from "@/plugins/sdk";
-import { useGrepRepository } from "@/repositories/grep";
+import type { GrepOptions } from "shared";
+import { computed, reactive, ref } from "vue";
+
 import { useGrepStore } from "./grepStore";
+
 import { SECRET_PATTERNS } from "@/data/secret-patterns";
 import type { SecretPatternCategory } from "@/data/secret-patterns";
-import type { GrepOptions } from "shared";
+import { useSDK } from "@/plugins/sdk";
+import { useGrepRepository } from "@/repositories/grep";
 
 interface BatchSearchStatus {
   isSearching: boolean;
@@ -20,7 +22,7 @@ export const useBatchSearchStore = defineStore("batchSearch", () => {
   const grepStore = useGrepStore();
 
   const showWarningDialog = ref(false);
-  const pendingOptions = ref<GrepOptions | null>(null);
+  const pendingOptions = ref<GrepOptions | undefined>();
 
   // Maps match value -> category for filtering results
   const matchCategoryMap = ref(new Map<string, SecretPatternCategory>());
@@ -36,9 +38,7 @@ export const useBatchSearchStore = defineStore("batchSearch", () => {
     cancelled: false,
   });
 
-  const activeCategories = computed(() =>
-    [...activeCategorySet.value].sort(),
-  );
+  const activeCategories = computed(() => [...activeCategorySet.value].sort());
 
   function startBatchSearch(options: GrepOptions) {
     pendingOptions.value = options;
@@ -46,11 +46,11 @@ export const useBatchSearchStore = defineStore("batchSearch", () => {
   }
 
   async function confirmAndStart() {
-    if (!pendingOptions.value) return;
+    if (pendingOptions.value === undefined) return;
 
     const options = pendingOptions.value;
     showWarningDialog.value = false;
-    pendingOptions.value = null;
+    pendingOptions.value = undefined;
 
     const validPatterns = SECRET_PATTERNS.filter((p) => {
       try {
@@ -104,22 +104,19 @@ export const useBatchSearchStore = defineStore("batchSearch", () => {
           // Tag new matches with this pattern's category
           const currentResults = grepStore.results.searchResults ?? [];
           for (let i = countBefore; i < currentResults.length; i++) {
-            matchCategoryMap.value.set(
-              currentResults[i].value,
-              pattern.category,
-            );
+            const match = currentResults[i];
+            if (match !== undefined) {
+              matchCategoryMap.value.set(match.value, pattern.category);
+            }
           }
 
-          if (result.matchesCount && result.matchesCount > 0) {
+          if (result.matchesCount !== undefined && result.matchesCount > 0) {
             activeCategorySet.value.add(pattern.category);
             totalFoundPatterns++;
             totalFoundMatches += result.matchesCount;
           }
-        } catch (error) {
-          console.error(
-            `Error searching pattern "${pattern.name}":`,
-            error,
-          );
+        } catch {
+          // Skip patterns that fail — errors are non-critical during batch search
         }
 
         status.patternsCompleted++;
@@ -150,12 +147,20 @@ export const useBatchSearchStore = defineStore("batchSearch", () => {
 
   function cancelSearch() {
     status.cancelled = true;
+    grepStore.status.isSearching = false;
+    grepStore.results.cancelled = true;
     grepRepository.stopGrep();
   }
 
   function closeWarningDialog() {
     showWarningDialog.value = false;
-    pendingOptions.value = null;
+    pendingOptions.value = undefined;
+  }
+
+  function resetBatchState() {
+    matchCategoryMap.value.clear();
+    activeCategorySet.value.clear();
+    selectedResultCategory.value = "all";
   }
 
   function getMatchCategory(value: string): SecretPatternCategory | undefined {
@@ -171,6 +176,7 @@ export const useBatchSearchStore = defineStore("batchSearch", () => {
     confirmAndStart,
     cancelSearch,
     closeWarningDialog,
+    resetBatchState,
     getMatchCategory,
   };
 });

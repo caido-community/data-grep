@@ -1,13 +1,13 @@
 export interface GrepOptions {
   includeRequests: boolean;
   includeResponses: boolean;
-  maxResults: number | null;
-  matchGroups: number[] | null;
+  maxResults?: number;
+  matchGroups?: number[];
   onlyInScope: boolean;
   skipLargeResponses: boolean;
-  customHTTPQL: string | null;
+  customHTTPQL?: string;
   cleanupOutput: boolean;
-  transformScript: string | null;
+  transformScript?: string;
 }
 
 export interface GrepStatus {
@@ -24,7 +24,7 @@ export interface MatchResult {
 }
 
 export interface GrepResults {
-  searchResults: MatchResult[] | null;
+  searchResults?: MatchResult[];
   uniqueMatchesCount: number;
   searchTime: number;
   cancelled: boolean;

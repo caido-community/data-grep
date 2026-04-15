@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import { useGrepStore } from "@/stores";
 import None from "./None.vue";
 import Results from "./Results.vue";
 import Searching from "./Searching.vue";
 import Welcome from "./Welcome.vue";
 
+import { useGrepStore } from "@/stores";
+
 const store = useGrepStore();
 </script>
 
 <template>
-  <Results v-if="store.results.searchResults && store.results.searchResults.length > 0" />
+  <Results
+    v-if="store.results.searchResults && store.results.searchResults.length > 0"
+  />
   <Welcome v-else-if="!store.pattern.trim()" />
   <Searching v-else-if="store.status.isSearching" />
   <None v-else />

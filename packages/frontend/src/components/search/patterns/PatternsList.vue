@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { usePatternsStore } from "@/stores";
 import Button from "primevue/button";
+import ConfirmDialog from "primevue/confirmdialog";
 import InputText from "primevue/inputtext";
 import ProgressSpinner from "primevue/progressspinner";
-import ConfirmDialog from "primevue/confirmdialog";
-import SelectButton from "primevue/selectbutton";
 import Select from "primevue/select";
+import SelectButton from "primevue/selectbutton";
 import { useConfirm } from "primevue/useconfirm";
+
 import CustomRegexDialog from "./CustomRegexDialog.vue";
+
+import { usePatternsStore } from "@/stores";
 import type { PatternCategory } from "@/stores/patternsStore";
 
 const patternsStore = usePatternsStore();
@@ -44,9 +46,9 @@ function getCustomPatternById(name: string) {
       <SelectButton
         v-model="patternsStore.selectedCategory"
         :options="categoryOptions"
-        optionLabel="label"
-        optionValue="value"
-        :allowEmpty="false"
+        option-label="label"
+        option-value="value"
+        :allow-empty="false"
         class="p-button-sm"
       />
       <Button
@@ -78,8 +80,8 @@ function getCustomPatternById(name: string) {
             value: c,
           })),
         ]"
-        optionLabel="label"
-        optionValue="value"
+        option-label="label"
+        option-value="value"
         class="w-52"
       />
     </div>
@@ -142,30 +144,30 @@ function getCustomPatternById(name: string) {
               v-if="pattern.category === 'custom'"
               icon="fas fa-edit"
               class="p-button-sm p-button-outlined p-button-secondary"
+              tooltip="Edit this pattern"
               @click="
                 patternsStore.openCustomRegexDialog(
                   getCustomPatternById(pattern.name),
                 )
               "
-              tooltip="Edit this pattern"
             />
             <Button
               v-if="pattern.category === 'custom'"
               icon="fas fa-trash"
               class="p-button-sm p-button-outlined p-button-danger"
+              tooltip="Delete this pattern"
               @click="
                 handleDeleteCustomPattern(
                   getCustomPatternById(pattern.name)?.id || '',
                   pattern.name,
                 )
               "
-              tooltip="Delete this pattern"
             />
             <Button
               icon="fas fa-check"
               class="p-button-sm p-button-outlined"
-              @click="patternsStore.applyPattern(pattern)"
               tooltip="Apply this pattern"
+              @click="patternsStore.applyPattern(pattern)"
             />
           </div>
         </div>

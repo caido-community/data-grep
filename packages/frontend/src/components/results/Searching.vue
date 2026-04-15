@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { useSDK } from "@/plugins/sdk";
-import { useGrepRepository } from "@/repositories/grep";
-import { useGrepStore } from "@/stores";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import { ref } from "vue";
+
+import { useSDK } from "@/plugins/sdk";
+import { useGrepRepository } from "@/repositories/grep";
+import { useGrepStore } from "@/stores";
 
 const store = useGrepStore();
 const sdk = useSDK();
@@ -16,8 +17,8 @@ const stopSearch = async () => {
   try {
     await stopGrep();
   } catch (error) {
-    console.error("Failed to stop grep:", error);
-    sdk.window.showToast("Failed to stop grep: " + error, {
+    const message = error instanceof Error ? error.message : String(error);
+    sdk.window.showToast(`Failed to stop grep: ${message}`, {
       variant: "error",
     });
   } finally {

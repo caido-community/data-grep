@@ -1,5 +1,6 @@
-import { useSDK } from "@/plugins/sdk";
 import type { GrepOptions } from "shared";
+
+import { useSDK } from "@/plugins/sdk";
 
 export const useGrepRepository = () => {
   const sdk = useSDK();
@@ -7,9 +8,8 @@ export const useGrepRepository = () => {
   const downloadResults = async () => {
     const { data, error } = await sdk.backend.downloadResults();
 
-    if (error) {
-      console.error("Error while downloading results: " + error);
-      sdk.window.showToast("Error while downloading results: " + error, {
+    if (error !== undefined) {
+      sdk.window.showToast(`Error while downloading results: ${error}`, {
         variant: "error",
       });
       return;
@@ -20,9 +20,8 @@ export const useGrepRepository = () => {
 
   const stopGrep = async () => {
     const { error } = await sdk.backend.stopGrep();
-    if (error) {
-      console.error("Failed to stop grep:", error);
-      sdk.window.showToast("Failed to stop grep: " + error, {
+    if (error !== undefined) {
+      sdk.window.showToast(`Failed to stop grep: ${error}`, {
         variant: "error",
       });
       return false;
@@ -39,11 +38,10 @@ export const useGrepRepository = () => {
 
     const { error, data } = await sdk.backend.grepRequests(pattern, options);
 
-    if (error) {
+    if (error !== undefined) {
       if (error === "Grep operation was stopped") {
         cancelled = true;
       } else {
-        console.error("Failed to search requests:", error);
         sdk.window.showToast(error, {
           variant: "error",
         });

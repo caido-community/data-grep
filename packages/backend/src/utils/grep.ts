@@ -45,7 +45,7 @@ export function buildRegexFilter(regex: RegExp, options: GrepOptions): string {
     regexFilter = `(${filters.join(" or ")})`;
   }
 
-  if (customHTTPQL) {
+  if (customHTTPQL !== undefined && customHTTPQL !== "") {
     regexFilter = `${customHTTPQL} and ${regexFilter}`;
   }
 
@@ -77,19 +77,19 @@ export interface ExtractedMatch {
 export function extractMatches(
   text: string,
   regex: RegExp,
-  matchGroups: number[] | null
+  matchGroups?: number[],
 ): ExtractedMatch[] {
-  if (!text) return [];
+  if (text === "") return [];
 
-  const flags = regex.flags.includes('g') ? regex.flags : regex.flags + 'g';
+  const flags = regex.flags.includes("g") ? regex.flags : regex.flags + "g";
   const matches = Array.from(text.matchAll(new RegExp(regex.source, flags)));
-  if (!matches.length) return [];
+  if (matches.length === 0) return [];
 
   const results: ExtractedMatch[] = [];
 
   for (const match of matches) {
     const matchIndex = match.index ?? 0;
-    
+
     if (!matchGroups || matchGroups.length === 0) {
       results.push({
         value: match[0],
@@ -106,7 +106,7 @@ export function extractMatches(
         const groupValue = match[groupIndex];
         const groupOffset = match[0].indexOf(groupValue);
         const startIndex = matchIndex + (groupOffset >= 0 ? groupOffset : 0);
-        
+
         results.push({
           value: groupValue,
           startIndex,
@@ -132,11 +132,11 @@ export function extractMatches(
 /**
  * Executes a query with periodic checks for cancellation
  */
-export async function executeQueryWithCancellationCheck<T>(
+export function executeQueryWithCancellationCheck<T>(
   promise: Promise<T>,
-  isActiveCheck: () => boolean
+  isActiveCheck: () => boolean,
 ): Promise<T> {
-  return new Promise<T>(async (resolve, reject) => {
+  return new Promise<T>((resolve, reject) => {
     const checkInterval = setInterval(() => {
       if (!isActiveCheck()) {
         clearInterval(checkInterval);
@@ -144,13 +144,14 @@ export async function executeQueryWithCancellationCheck<T>(
       }
     }, 100);
 
-    try {
-      const result = await promise;
-      clearInterval(checkInterval);
-      resolve(result);
-    } catch (error) {
-      clearInterval(checkInterval);
-      reject(error);
-    }
+    promise
+      .then((result) => {
+        clearInterval(checkInterval);
+        resolve(result);
+      })
+      .catch((error: unknown) => {
+        clearInterval(checkInterval);
+        reject(error instanceof Error ? error : new Error(String(error)));
+      });
   });
 }

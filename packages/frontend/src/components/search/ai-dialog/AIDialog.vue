@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { useAIStore } from "@/stores";
 import Button from "primevue/button";
 import Select from "primevue/select";
 import Textarea from "primevue/textarea";
+
+import { useAIStore } from "@/stores";
 
 const aiStore = useAIStore();
 </script>
@@ -14,9 +15,9 @@ const aiStore = useAIStore();
       <Select
         v-model="aiStore.selectedModel"
         :options="aiStore.availableModelGroups"
-        optionLabel="name"
-        optionGroupLabel="label"
-        optionGroupChildren="models"
+        option-label="name"
+        option-group-label="label"
+        option-group-children="models"
         placeholder="Select a model"
         class="w-full"
       />

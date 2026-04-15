@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { useBatchSearchStore } from "@/stores";
-import { SECRET_PATTERNS } from "@/data/secret-patterns";
-import Dialog from "primevue/dialog";
 import Button from "primevue/button";
+import Dialog from "primevue/dialog";
+
+import { SECRET_PATTERNS } from "@/data/secret-patterns";
+import { useBatchSearchStore } from "@/stores";
 
 const batchSearchStore = useBatchSearchStore();
 </script>
@@ -13,7 +14,7 @@ const batchSearchStore = useBatchSearchStore();
     modal
     header="Search All Secrets"
     :style="{ width: '500px' }"
-    :dismissableMask="false"
+    :dismissable-mask="false"
   >
     <div class="flex flex-col gap-4">
       <div class="flex items-start gap-3">
@@ -35,9 +36,7 @@ const batchSearchStore = useBatchSearchStore();
 
       <div class="bg-zinc-900 border border-gray-700 rounded-md p-3">
         <p class="text-sm font-semibold">What will happen:</p>
-        <ul
-          class="text-sm text-gray-400 mt-2 space-y-1 list-disc list-inside"
-        >
+        <ul class="text-sm text-gray-400 mt-2 space-y-1 list-disc list-inside">
           <li>Each pattern will be searched individually on the main page</li>
           <li>You can stop the current search using the Stop button</li>
           <li>Results accumulate and can be filtered by category</li>

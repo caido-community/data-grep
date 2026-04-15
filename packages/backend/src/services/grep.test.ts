@@ -1,6 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
-import { grepService } from "./grep";
 import type { GrepOptions } from "shared";
+import { type Mock, describe, expect, it, vi } from "vitest";
+
+import { grepService } from "./grep";
 
 function createMockRequest(id: string, raw: string) {
   return {
@@ -26,9 +27,10 @@ function createMockSDK(
   const mockItems = items.map((item) => ({
     cursor: item.id,
     request: createMockRequest(item.id, item.rawRequest),
-    response: item.rawResponse
-      ? createMockResponse(item.rawResponse)
-      : undefined,
+    response:
+      item.rawResponse !== undefined
+        ? createMockResponse(item.rawResponse)
+        : undefined,
   }));
 
   let queryCallCount = 0;
@@ -84,16 +86,16 @@ function createMockSDK(
 const defaultOptions: GrepOptions = {
   includeRequests: true,
   includeResponses: false,
-  maxResults: null,
+  maxResults: undefined,
   matchGroups: [0],
   onlyInScope: false,
   skipLargeResponses: false,
-  customHTTPQL: null,
+  customHTTPQL: undefined,
   cleanupOutput: false,
-  transformScript: null,
+  transformScript: undefined,
 };
 
-function getMatchValues(send: ReturnType<typeof vi.fn>): string[] {
+function getMatchValues(send: Mock): string[] {
   return send.mock.calls
     .filter(
       (call: unknown[]) =>
@@ -311,9 +313,7 @@ describe("grepService.grepRequests", () => {
 
   it("returns error when no project is selected", async () => {
     const { sdk } = createMockSDK([]);
-    (sdk.projects.getCurrent as ReturnType<typeof vi.fn>).mockResolvedValue(
-      null,
-    );
+    vi.mocked(sdk.projects.getCurrent).mockResolvedValue(null as never);
 
     const result = await grepService.grepRequests(sdk, "test", defaultOptions);
 

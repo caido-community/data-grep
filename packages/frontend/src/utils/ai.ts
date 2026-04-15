@@ -150,9 +150,7 @@ export async function generateRegexPattern(
   userPrompt: string,
 ): Promise<{ pattern: string; matchGroup: number }> {
   if (!isProviderConfigured(sdk, model.provider)) {
-    throw new Error(
-      `Provider "${model.provider}" is not configured`,
-    );
+    throw new Error(`Provider "${model.provider}" is not configured`);
   }
 
   const provider = sdk.ai.createProvider();

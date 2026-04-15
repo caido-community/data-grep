@@ -1,13 +1,15 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
-import { useGrepStore } from "./grepStore";
-import { useCustomRegexRepository } from "@/repositories/customRegex";
 import type { CustomRegex } from "shared";
+import { computed, ref } from "vue";
+
+import { useGrepStore } from "./grepStore";
+
 import {
-  SECRET_PATTERNS,
   SECRET_PATTERN_CATEGORIES,
+  SECRET_PATTERNS,
   type SecretPatternCategory,
 } from "@/data/secret-patterns";
+import { useCustomRegexRepository } from "@/repositories/customRegex";
 
 export type PatternCategory = "all" | "predefined" | "secrets" | "custom";
 
@@ -27,7 +29,7 @@ export const usePatternsStore = defineStore("patterns", () => {
   const dialogVisible = ref(false);
   const customPatterns = ref<(CustomRegex & { id: string })[]>([]);
   const isLoading = ref(false);
-  const editingPattern = ref<(CustomRegex & { id: string }) | null>(null);
+  const editingPattern = ref<(CustomRegex & { id: string }) | undefined>();
   const showCustomRegexDialog = ref(false);
   const selectedCategory = ref<PatternCategory>("all");
   const searchQuery = ref("");
@@ -103,9 +105,7 @@ export const usePatternsStore = defineStore("patterns", () => {
     let patterns = allPatterns.value;
 
     if (selectedCategory.value !== "all") {
-      patterns = patterns.filter(
-        (p) => p.category === selectedCategory.value,
-      );
+      patterns = patterns.filter((p) => p.category === selectedCategory.value);
     }
 
     if (
@@ -139,8 +139,8 @@ export const usePatternsStore = defineStore("patterns", () => {
         id: p.id,
         ...p.regex,
       }));
-    } catch (error) {
-      console.error("Failed to load custom patterns:", error);
+    } catch {
+      // Silently fail — patterns will show as empty
     } finally {
       isLoading.value = false;
     }
@@ -170,23 +170,22 @@ export const usePatternsStore = defineStore("patterns", () => {
 
   function closeDialog() {
     dialogVisible.value = false;
-    scrollPosition.value = 0;
   }
 
   function openCustomRegexDialog(pattern?: CustomRegex & { id: string }) {
-    editingPattern.value = pattern || null;
+    editingPattern.value = pattern;
     showCustomRegexDialog.value = true;
   }
 
   function closeCustomRegexDialog() {
     showCustomRegexDialog.value = false;
-    editingPattern.value = null;
+    editingPattern.value = undefined;
   }
 
   function applyPattern(pattern: DisplayPattern) {
     grepStore.pattern = pattern.pattern;
     grepStore.currentPatternName = pattern.name;
-    grepStore.options.matchGroups = pattern.matchGroups || null;
+    grepStore.options.matchGroups = pattern.matchGroups;
     closeDialog();
   }
 

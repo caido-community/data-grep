@@ -25,13 +25,13 @@ export const CustomRegexSchema = z.object({
 export const GrepOptionsSchema = z.object({
   includeRequests: z.boolean(),
   includeResponses: z.boolean(),
-  maxResults: z.number().positive().nullable(),
-  matchGroups: z.array(z.number().nonnegative()).nullable(),
+  maxResults: z.number().positive().optional(),
+  matchGroups: z.array(z.number().nonnegative()).optional(),
   onlyInScope: z.boolean(),
   skipLargeResponses: z.boolean(),
-  customHTTPQL: z.string().nullable(),
+  customHTTPQL: z.string().optional(),
   cleanupOutput: z.boolean(),
-  transformScript: z.string().nullable(),
+  transformScript: z.string().optional(),
 });
 
 export const RegexIdSchema = z
@@ -40,7 +40,7 @@ export const RegexIdSchema = z
   .max(50, "ID must be less than 50 characters")
   .regex(
     /^[a-zA-Z0-9_-]+$/,
-    "ID can only contain letters, numbers, underscores, and hyphens"
+    "ID can only contain letters, numbers, underscores, and hyphens",
   );
 
 export const GrepPatternSchema = z

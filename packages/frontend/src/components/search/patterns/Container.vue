@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { usePatternsStore } from "@/stores";
 import Dialog from "primevue/dialog";
+
 import PatternsList from "./PatternsList.vue";
+
+import { usePatternsStore } from "@/stores";
 
 const patternsStore = usePatternsStore();
 </script>
