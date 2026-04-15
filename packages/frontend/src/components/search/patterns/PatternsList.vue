@@ -1,13 +1,24 @@
 <script setup lang="ts">
 import { usePatternsStore } from "@/stores";
 import Button from "primevue/button";
+import InputText from "primevue/inputtext";
 import ProgressSpinner from "primevue/progressspinner";
 import ConfirmDialog from "primevue/confirmdialog";
+import SelectButton from "primevue/selectbutton";
+import Select from "primevue/select";
 import { useConfirm } from "primevue/useconfirm";
 import CustomRegexDialog from "./CustomRegexDialog.vue";
+import type { PatternCategory } from "@/stores/patternsStore";
 
 const patternsStore = usePatternsStore();
 const confirm = useConfirm();
+
+const categoryOptions: { label: string; value: PatternCategory }[] = [
+  { label: "All", value: "all" },
+  { label: "Predefined", value: "predefined" },
+  { label: "Secrets", value: "secrets" },
+  { label: "Custom", value: "custom" },
+];
 
 function handleDeleteCustomPattern(id: string, name: string) {
   confirm.require({
@@ -25,16 +36,19 @@ function handleDeleteCustomPattern(id: string, name: string) {
 function getCustomPatternById(name: string) {
   return patternsStore.customPatterns.find((p) => p.name === name);
 }
-
-function isCustomPattern(name: string) {
-  return patternsStore.customPatterns.some((p) => p.name === name);
-}
 </script>
 
 <template>
   <div class="flex flex-col gap-4">
     <div class="flex justify-between items-center">
-      <p class="text-gray-300">Select a pattern to use in your search:</p>
+      <SelectButton
+        v-model="patternsStore.selectedCategory"
+        :options="categoryOptions"
+        optionLabel="label"
+        optionValue="value"
+        :allowEmpty="false"
+        class="p-button-sm"
+      />
       <Button
         label="Create Custom"
         icon="fas fa-plus"
@@ -43,41 +57,79 @@ function isCustomPattern(name: string) {
       />
     </div>
 
+    <div class="flex gap-2">
+      <div class="relative flex-1">
+        <i
+          class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"
+        ></i>
+        <InputText
+          v-model="patternsStore.searchQuery"
+          placeholder="Search patterns..."
+          class="w-full pl-9"
+        />
+      </div>
+      <Select
+        v-if="patternsStore.selectedCategory === 'secrets'"
+        v-model="patternsStore.selectedSecretCategory"
+        :options="[
+          { label: 'All Categories', value: 'all' },
+          ...patternsStore.secretPatternCategories.map((c) => ({
+            label: c,
+            value: c,
+          })),
+        ]"
+        optionLabel="label"
+        optionValue="value"
+        class="w-52"
+      />
+    </div>
+
+    <div class="text-xs text-gray-500">
+      {{ patternsStore.filteredPatterns.length }} patterns
+    </div>
+
     <div v-if="patternsStore.isLoading" class="flex justify-center py-8">
       <ProgressSpinner style="width: 50px; height: 50px" />
     </div>
 
-    <div v-else class="grid grid-cols-1 gap-4">
+    <div v-else class="grid grid-cols-1 gap-3 max-h-[500px] overflow-y-auto">
       <div
-        v-for="pattern in patternsStore.allPatterns"
-        :key="pattern.name"
-        class="p-4 border rounded-lg hover:bg-zinc-900/50 transition-colors"
-        :class="
-          isCustomPattern(pattern.name)
-            ? 'border-blue-700/50 bg-blue-900/10'
-            : 'border-gray-700'
-        "
+        v-for="pattern in patternsStore.filteredPatterns"
+        :key="pattern.name + pattern.pattern"
+        class="p-3 border rounded-lg hover:bg-zinc-900/50 transition-colors"
+        :class="{
+          'border-blue-700/50 bg-blue-900/10': pattern.category === 'custom',
+          'border-yellow-700/30 bg-yellow-900/5':
+            pattern.category === 'secrets',
+          'border-gray-700': pattern.category === 'predefined',
+        }"
       >
         <div class="flex justify-between items-start">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
-              <h3 class="text-lg font-medium">{{ pattern.name }}</h3>
+              <h3 class="text-sm font-medium truncate">{{ pattern.name }}</h3>
               <span
-                v-if="isCustomPattern(pattern.name)"
-                class="text-xs bg-blue-600 text-white px-2 py-1 rounded"
+                v-if="pattern.category === 'custom'"
+                class="text-xs bg-blue-600 text-white px-1.5 py-0.5 rounded shrink-0"
               >
                 Custom
               </span>
+              <span
+                v-if="pattern.category === 'secrets' && pattern.secretCategory"
+                class="text-xs bg-yellow-700/50 text-yellow-200 px-1.5 py-0.5 rounded shrink-0"
+              >
+                {{ pattern.secretCategory }}
+              </span>
             </div>
-            <p class="text-sm text-gray-400">{{ pattern.description }}</p>
+            <p class="text-xs text-gray-400">{{ pattern.description }}</p>
             <code
-              class="mt-2 block text-xs text-gray-300 bg-gray-600 p-2 rounded w-fit"
+              class="mt-1.5 block text-xs text-gray-300 bg-gray-600 p-1.5 rounded w-fit max-w-full truncate"
             >
               {{ pattern.pattern }}
             </code>
             <div
               v-if="pattern.matchGroups && pattern.matchGroups.length > 0"
-              class="mt-2"
+              class="mt-1.5"
             >
               <span class="text-xs text-gray-400">Match Groups: </span>
               <span class="text-xs text-blue-400">{{
@@ -85,26 +137,26 @@ function isCustomPattern(name: string) {
               }}</span>
             </div>
           </div>
-          <div class="flex gap-2">
+          <div class="flex gap-2 ml-2 shrink-0">
             <Button
-              v-if="isCustomPattern(pattern.name)"
+              v-if="pattern.category === 'custom'"
               icon="fas fa-edit"
               class="p-button-sm p-button-outlined p-button-secondary"
               @click="
                 patternsStore.openCustomRegexDialog(
-                  getCustomPatternById(pattern.name)
+                  getCustomPatternById(pattern.name),
                 )
               "
               tooltip="Edit this pattern"
             />
             <Button
-              v-if="isCustomPattern(pattern.name)"
+              v-if="pattern.category === 'custom'"
               icon="fas fa-trash"
               class="p-button-sm p-button-outlined p-button-danger"
               @click="
                 handleDeleteCustomPattern(
                   getCustomPatternById(pattern.name)?.id || '',
-                  pattern.name
+                  pattern.name,
                 )
               "
               tooltip="Delete this pattern"
@@ -117,6 +169,14 @@ function isCustomPattern(name: string) {
             />
           </div>
         </div>
+      </div>
+
+      <div
+        v-if="patternsStore.filteredPatterns.length === 0"
+        class="text-center py-8 text-gray-400"
+      >
+        <i class="fas fa-search text-2xl mb-2"></i>
+        <p>No patterns match your search.</p>
       </div>
     </div>
 

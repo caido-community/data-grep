@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import { useSDK } from "@/plugins/sdk";
 import { useGrepRepository } from "@/repositories/grep";
-import { useGrepStore } from "@/stores";
+import { useBatchSearchStore, useGrepStore } from "@/stores";
 import { copyToClipboard } from "@/utils/clipboard";
 import { formatTime } from "@/utils/time";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Dropdown from "primevue/dropdown";
 import InputText from "primevue/inputtext";
+import Select from "primevue/select";
 import VirtualScroller from "primevue/virtualscroller";
 import MatchViewer from "./MatchViewer.vue";
 import type { MatchResult } from "shared";
 import { computed, ref } from "vue";
 
 const store = useGrepStore();
+const batchSearchStore = useBatchSearchStore();
 const isStoppingSearch = ref(false);
 const isExporting = ref(false);
 const isCopying = ref(false);
@@ -59,14 +61,33 @@ const hasResults = computed(
   () => store.results.searchResults && store.results.searchResults?.length > 0
 );
 
+const isBatchSearch = computed(() => batchSearchStore.status.isSearching || batchSearchStore.activeCategories.length > 0);
+
+const categoryFilterOptions = computed(() => [
+  { label: "All Categories", value: "all" },
+  ...batchSearchStore.activeCategories.map((c) => ({ label: c, value: c })),
+]);
+
 const filteredAndSortedResults = computed(() => {
   if (!store.results.searchResults) return [];
 
-  // First filter by search term
   let results = [...store.results.searchResults];
+
+  // Filter by secret category (during/after batch search)
+  if (batchSearchStore.selectedResultCategory !== "all") {
+    results = results.filter(
+      (item) =>
+        batchSearchStore.getMatchCategory(item.value) ===
+        batchSearchStore.selectedResultCategory,
+    );
+  }
+
+  // Filter by search term
   if (resultsFilter.value.trim()) {
     const searchTerm = resultsFilter.value.toLowerCase();
-    results = results.filter(item => item.value.toLowerCase().includes(searchTerm));
+    results = results.filter((item) =>
+      item.value.toLowerCase().includes(searchTerm),
+    );
   }
 
   switch (currentSort.value) {
@@ -172,15 +193,23 @@ const closeMatchViewer = () => {
     <template #content>
       <div class="flex flex-col h-full">
         <div class="flex justify-between items-center mb-4">
-          <span class="text-xl font-semibold">
-            <i class="fas fa-list mr-2"></i>
-            <template v-if="store.results.searchResults">
-              Matches ({{ store.results.uniqueMatchesCount }} matches)
-            </template>
-            <template v-else-if="store.status.isSearching">
-              Searching...
-            </template>
-          </span>
+          <div class="flex flex-col">
+            <span class="text-xl font-semibold">
+              <i class="fas fa-list mr-2"></i>
+              <template v-if="store.results.searchResults">
+                Matches ({{ store.results.uniqueMatchesCount }} matches)
+              </template>
+              <template v-else-if="store.status.isSearching">
+                Searching...
+              </template>
+            </span>
+            <span
+              v-if="store.currentPatternName"
+              class="text-sm text-gray-400 mt-1 ml-7"
+            >
+              Pattern: {{ store.currentPatternName }}
+            </span>
+          </div>
           <div class="text-sm text-gray-500 flex items-center gap-2">
             <template v-if="store.status.isSearching">
               <div class="shimmer">Searching {{ store.status.progress }}%</div>
@@ -208,9 +237,17 @@ const closeMatchViewer = () => {
                 :disabled="!hasResults"
               />
             </div>
-            <div class="text-xs text-gray-500">
+            <Select
+              v-if="isBatchSearch && categoryFilterOptions.length > 1"
+              v-model="batchSearchStore.selectedResultCategory"
+              :options="categoryFilterOptions"
+              optionLabel="label"
+              optionValue="value"
+              class="w-48"
+            />
+            <div class="text-xs text-gray-500 shrink-0">
               {{ filteredAndSortedResults.length }} items
-              <template v-if="resultsFilter.trim() && filteredAndSortedResults.length !== store.results.uniqueMatchesCount">
+              <template v-if="(resultsFilter.trim() || batchSearchStore.selectedResultCategory !== 'all') && filteredAndSortedResults.length !== store.results.uniqueMatchesCount">
                 (filtered from {{ store.results.uniqueMatchesCount }})
               </template>
             </div>

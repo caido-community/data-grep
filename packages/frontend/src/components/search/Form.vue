@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { GuideContainer } from "@/components/guide";
-import { useAIStore, useGrepStore, useGuideStore, usePatternsStore } from "@/stores";
+import { useAIStore, useBatchSearchStore, useGrepStore, useGuideStore, usePatternsStore } from "@/stores";
 import Button from "primevue/button";
 import Divider from "primevue/divider";
 import { ref } from "vue";
@@ -9,11 +9,13 @@ import Search from "./Search.vue";
 import TransformScriptDialog from "./TransformScriptDialog.vue";
 import { AIDialogContainer } from "./ai-dialog";
 import { PatternsDialogContainer } from "./patterns";
+import BatchSearchDialog from "./batch/BatchSearchDialog.vue";
 
 const grepStore = useGrepStore();
 const aiStore = useAIStore();
 const patternsStore = usePatternsStore();
 const guideStore = useGuideStore();
+const batchSearchStore = useBatchSearchStore();
 const transformDialogRef = ref<InstanceType<typeof TransformScriptDialog> | null>(null);
 
 const openTransformDialog = () => {
@@ -34,7 +36,7 @@ const openTransformDialog = () => {
     <Options />
 
     <div class="flex justify-between mt-2 gap-2">
-      <div class="flex gap-2">
+      <div class="flex gap-2 flex-wrap">
         <Button
           label="Search"
           icon="fas fa-search"
@@ -44,6 +46,13 @@ const openTransformDialog = () => {
           :disabled="!grepStore.pattern.trim()"
         />
         <Button
+          label="Search All Secrets"
+          icon="fas fa-key"
+          class="p-button-warning"
+          @click="batchSearchStore.startBatchSearch(grepStore.options)"
+          :loading="batchSearchStore.status.isSearching"
+        />
+        <Button
           :loading="aiStore.isProcessing"
           label="Ask AI"
           icon="fas fa-robot"
@@ -51,7 +60,7 @@ const openTransformDialog = () => {
           @click="aiStore.openDialog"
         />
         <Button
-          label="Predefined Patterns"
+          label="Patterns"
           icon="fas fa-list"
           class="p-button-secondary"
           @click="patternsStore.openDialog"
@@ -78,5 +87,6 @@ const openTransformDialog = () => {
     <PatternsDialogContainer />
     <GuideContainer />
     <TransformScriptDialog ref="transformDialogRef" />
+    <BatchSearchDialog />
   </div>
 </template>

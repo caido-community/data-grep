@@ -10,8 +10,8 @@ const patternsStore = usePatternsStore();
   <Dialog
     v-model:visible="patternsStore.dialogVisible"
     modal
-    header="Predefined Patterns"
-    :style="{ width: '600px' }"
+    header="Patterns"
+    :style="{ width: '700px' }"
     @hide="patternsStore.closeDialog"
   >
     <PatternsList />

@@ -10,6 +10,7 @@ export const useGrepStore = defineStore("grep", () => {
   const grepRepository = useGrepRepository();
 
   const pattern = ref("");
+  const currentPatternName = ref("");
 
   const options = reactive<GrepOptions>({
     includeRequests: true,
@@ -125,6 +126,7 @@ export const useGrepStore = defineStore("grep", () => {
 
   return {
     pattern,
+    currentPatternName,
     options,
     status,
     results,
