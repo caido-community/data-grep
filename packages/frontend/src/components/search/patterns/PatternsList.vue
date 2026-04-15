@@ -38,6 +38,13 @@ function handleDeleteCustomPattern(id: string, name: string) {
 function getCustomPatternById(name: string) {
   return patternsStore.customPatterns.find((p) => p.name === name);
 }
+
+function editCustomPattern(name: string) {
+  const pattern = getCustomPatternById(name);
+  if (pattern !== undefined) {
+    patternsStore.openCustomRegexDialog(pattern);
+  }
+}
 </script>
 
 <template>
@@ -86,7 +93,7 @@ function getCustomPatternById(name: string) {
       />
     </div>
 
-    <div class="text-xs text-gray-500">
+    <div v-if="!patternsStore.isLoading" class="text-xs text-gray-500">
       {{ patternsStore.filteredPatterns.length }} patterns
     </div>
 
@@ -145,11 +152,7 @@ function getCustomPatternById(name: string) {
               icon="fas fa-edit"
               class="p-button-sm p-button-outlined p-button-secondary"
               tooltip="Edit this pattern"
-              @click="
-                patternsStore.openCustomRegexDialog(
-                  getCustomPatternById(pattern.name),
-                )
-              "
+              @click="editCustomPattern(pattern.name)"
             />
             <Button
               v-if="pattern.category === 'custom'"
