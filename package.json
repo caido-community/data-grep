@@ -2,7 +2,9 @@
   "name": "frontend-vue",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
+    "test": "pnpm -r --parallel test",
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint packages/",
     "lint:fix": "eslint packages/ --fix",

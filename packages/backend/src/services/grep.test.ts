@@ -1,5 +1,5 @@
 import type { GrepOptions } from "shared";
-import { type Mock, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, type Mock, vi } from "vitest";
 
 import { grepService } from "./grep";
 

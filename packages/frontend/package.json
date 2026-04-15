@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "typecheck": "vue-tsc --noEmit"
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@caido/primevue": "0.1.11",
@@ -26,6 +28,7 @@
     "@caido/sdk-frontend": "0.55.3",
     "backend": "workspace:*",
     "shared": "workspace:*",
+    "vitest": "^2.1.0",
     "vue-tsc": "2.2.8"
   }
 }

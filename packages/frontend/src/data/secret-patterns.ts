@@ -140,11 +140,6 @@ export const SECRET_PATTERNS: SecretPattern[] = [
     category: "AI & ML",
   },
   {
-    name: "OpenAI API Key",
-    pattern: "\\b(sk-[[:alnum:]_-]+T3BlbkFJ[[:alnum:]_-]+)\\b",
-    category: "AI & ML",
-  },
-  {
     name: "Replicate API Key",
     pattern: "\\b(r8_[0-9A-Za-z-_]{37})\\b",
     category: "AI & ML",
@@ -278,16 +273,6 @@ export const SECRET_PATTERNS: SecretPattern[] = [
   {
     name: "Paystack Key",
     pattern: "\\b(sk\\_[a-z]{1,}\\_[A-Za-z0-9]{40})\\b",
-    category: "Payment & Finance",
-  },
-  {
-    name: "Ramp Client ID",
-    pattern: "\\b(ramp_id_[[:alnum:]]{40})\\b",
-    category: "Payment & Finance",
-  },
-  {
-    name: "Ramp Client Secret",
-    pattern: "\\b(ramp_sec_[[:alnum:]]{48})\\b",
     category: "Payment & Finance",
   },
   {
@@ -448,11 +433,6 @@ export const SECRET_PATTERNS: SecretPattern[] = [
     category: "SaaS & APIs",
   },
   {
-    name: "Airtable OAuth Token",
-    pattern: "\\b([[:alnum:]]+\\.v1\\.[a-zA-Z0-9_-]+\\.[a-f0-9]+)\\b",
-    category: "SaaS & APIs",
-  },
-  {
     name: "Apideck API Key",
     pattern: "\\b(sk_live_[a-z0-9A-Z-]{93})\\b",
     category: "SaaS & APIs",
@@ -580,11 +560,6 @@ export const SECRET_PATTERNS: SecretPattern[] = [
   {
     name: "Kanban URL",
     pattern: "\\b([0-9a-z]{1,}\\.kanbantool\\.com)\\b",
-    category: "SaaS & APIs",
-  },
-  {
-    name: "Klaviyo API Key",
-    pattern: "\\b(pk_[[:alnum:]]{34})\\b",
     category: "SaaS & APIs",
   },
   {

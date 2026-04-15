@@ -14,6 +14,9 @@ export default [
     },
   },
   {
-    ignores: ["packages/backend/vitest.config.ts"],
+    ignores: [
+      "packages/backend/vitest.config.ts",
+      "packages/frontend/vitest.config.ts",
+    ],
   },
 ];
