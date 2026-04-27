@@ -171,10 +171,16 @@ const stopSearch = async () => {
   store.status.isSearching = false;
   store.results.cancelled = true;
 
-  const ok = await stopGrep();
-  if (!ok) {
+  try {
+    const ok = await stopGrep();
+    if (!ok) {
+      store.status.isSearching = true;
+      store.results.cancelled = false;
+    }
+  } catch {
     store.status.isSearching = true;
     store.results.cancelled = false;
+    sdk.window.showToast("Failed to stop search", { variant: "error" });
   }
 };
 

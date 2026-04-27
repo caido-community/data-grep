@@ -146,6 +146,7 @@ export const useBatchSearchStore = defineStore("batchSearch", () => {
       );
     } finally {
       grepStore.results.searchTime = Date.now() - startTime;
+      grepStore.results.cancelled = status.cancelled;
       status.isSearching = false;
       grepStore.status.isSearching = false;
       grepStore.currentPatternName = "";
@@ -154,8 +155,6 @@ export const useBatchSearchStore = defineStore("batchSearch", () => {
 
   function cancelSearch() {
     status.cancelled = true;
-    grepStore.status.isSearching = false;
-    grepStore.results.cancelled = true;
     grepRepository.stopGrep();
   }
 

@@ -616,7 +616,11 @@ const POSITIVE_SAMPLES: [string, string, string][] = [
     "token=sntrys_eyJ" + "A".repeat(197),
     "sntrys_eyJ" + "A".repeat(197),
   ],
-  ["Shopify Access Token", "token=shpat_" + "a".repeat(32), "shpat_"],
+  [
+    "Shopify Access Token",
+    "token=shpat_" + "a".repeat(32),
+    "shpat_" + "a".repeat(32),
+  ],
   [
     "Tableau Token Secret",
     "secret=" + "A".repeat(22) + "==:" + "B".repeat(32),

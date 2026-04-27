@@ -191,7 +191,7 @@ export const SECRET_PATTERNS: SecretPattern[] = [
   },
   {
     name: "RubyGems API Key",
-    pattern: "\\b(rubygems_[a-zA0-9]{48})\\b",
+    pattern: "\\b(rubygems_[a-zA-Z0-9]{48})\\b",
     category: "CI/CD & DevOps",
   },
   {
@@ -648,7 +648,7 @@ export const SECRET_PATTERNS: SecretPattern[] = [
   },
   {
     name: "Shopify Access Token",
-    pattern: "\\b(shppa_|shpat_)([0-9A-Fa-f]{32})\\b",
+    pattern: "\\b((?:shppa_|shpat_)[0-9A-Fa-f]{32})\\b",
     category: "SaaS & APIs",
   },
   {
@@ -709,8 +709,7 @@ export const SECRET_PATTERNS: SecretPattern[] = [
   },
   {
     name: "Session Key",
-    pattern:
-      "(?:[^A-Za-z0-9+/]|\\A)([a-zA-Z0-9+/]{100,}={0,3})(?:[^A-Za-z0-9+/=]|\\z)",
+    pattern: "(?<![A-Za-z0-9+/])([a-zA-Z0-9+/]{100,}={0,3})(?![A-Za-z0-9+/=])",
     category: "Tokens & Keys",
   },
   {
@@ -777,7 +776,7 @@ export const SECRET_PATTERNS: SecretPattern[] = [
   {
     name: "Azure DevOps Token",
     pattern:
-      "(?:[^a-zA-Z0-9_~.-]|\\A)([a-zA-Z0-9_~.-]{3}\\dQ~[a-zA-Z0-9_~.-]{31,34})(?:[^a-zA-Z0-9_~.-]|\\z)",
+      "(?<![a-zA-Z0-9_~.-])([a-zA-Z0-9_~.-]{3}\\dQ~[a-zA-Z0-9_~.-]{31,34})(?![a-zA-Z0-9_~.-])",
     category: "Other",
   },
   {
@@ -864,7 +863,7 @@ export const SECRET_PATTERNS: SecretPattern[] = [
   {
     name: "Docker Access Token",
     pattern:
-      "\\b(dckr_pat_[a-zA-Z0-9_-]{27}|dckr_oat_[a-zA-Z0-9_-]{32})(?:[^a-zA-Z0-9_-]|\\z)",
+      "\\b(dckr_pat_[a-zA-Z0-9_-]{27}|dckr_oat_[a-zA-Z0-9_-]{32})(?![a-zA-Z0-9_-])",
     category: "Other",
   },
   {
@@ -873,7 +872,7 @@ export const SECRET_PATTERNS: SecretPattern[] = [
     category: "Other",
   },
   {
-    name: "Terraform Cloud Token",
+    name: "Terraform Cloud Team Token",
     pattern: "\\btfp_[a-zA-Z0-9_]{40,59}\\b",
     category: "Other",
   },
