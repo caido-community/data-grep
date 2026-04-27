@@ -1,3 +1,8 @@
+import { defineStore } from "pinia";
+import { computed, ref } from "vue";
+
+import { useGrepStore } from "./grepStore";
+
 import { useSDK } from "@/plugins/sdk";
 import {
   generateRegexPattern,
@@ -5,9 +10,6 @@ import {
   type Model,
   type ModelGroup,
 } from "@/utils/ai";
-import { defineStore } from "pinia";
-import { computed, ref } from "vue";
-import { useGrepStore } from "./grepStore";
 
 export const useAIStore = defineStore("ai", () => {
   const sdk = useSDK();
@@ -33,7 +35,7 @@ export const useAIStore = defineStore("ai", () => {
     const allModels = groups.flatMap((g) => g.models);
 
     const currentStillAvailable =
-      selectedModel.value &&
+      selectedModel.value !== undefined &&
       allModels.some(
         (m) =>
           m.id === selectedModel.value!.id &&

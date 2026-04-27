@@ -1,38 +1,40 @@
 <script setup lang="ts">
-import { useGrepStore } from "@/stores";
 import { useMediaQuery } from "@vueuse/core";
 import Checkbox from "primevue/checkbox";
 import InputNumber from "primevue/inputnumber";
 import InputText from "primevue/inputtext";
 import { computed } from "vue";
 
+import { useGrepStore } from "@/stores";
+
 const grepStore = useGrepStore();
 const isSmallScreen = useMediaQuery("(max-width: 900px)");
 
 const transformEnabled = computed({
-  get: () => grepStore.options.transformScript !== null,
+  get: () => grepStore.options.transformScript !== undefined,
   set: (val: boolean) => {
-    grepStore.options.transformScript = val ? "" : null;
-  }
+    grepStore.options.transformScript = val ? "" : undefined;
+  },
 });
 
 const matchGroupsString = computed({
   get: () => {
-    if (!grepStore.options.matchGroups) return "";
+    if (grepStore.options.matchGroups === undefined) return "";
     return grepStore.options.matchGroups.join(",");
   },
   set: (value: string) => {
-    if (!value) {
-      grepStore.options.matchGroups = null;
+    if (value === "") {
+      grepStore.options.matchGroups = undefined;
       return;
     }
-    const groups = value.split(",")
-      .map(g => g.trim())
-      .filter(g => g !== "")
-      .map(g => parseInt(g))
-      .filter(g => !isNaN(g));
-    grepStore.options.matchGroups = groups.length ? groups : null;
-  }
+    const groups = value
+      .split(",")
+      .map((g) => g.trim())
+      .filter((g) => g !== "")
+      .map((g) => parseInt(g))
+      .filter((g) => !isNaN(g));
+    grepStore.options.matchGroups = groups.length > 0 ? groups : undefined;
+  },
 });
 </script>
 
@@ -47,7 +49,7 @@ const matchGroupsString = computed({
           <Checkbox
             v-model="grepStore.options.includeRequests"
             :binary="true"
-            inputId="includeRequests"
+            input-id="includeRequests"
           />
           <label for="includeRequests" class="ml-3">Include Requests</label>
         </div>
@@ -56,7 +58,7 @@ const matchGroupsString = computed({
           <Checkbox
             v-model="grepStore.options.includeResponses"
             :binary="true"
-            inputId="includeResponses"
+            input-id="includeResponses"
           />
           <label for="includeResponses" class="ml-3">Include Responses</label>
         </div>
@@ -65,12 +67,12 @@ const matchGroupsString = computed({
           <Checkbox
             v-model="grepStore.options.onlyInScope"
             :binary="true"
-            inputId="onlyInScope"
+            input-id="onlyInScope"
           />
           <label for="onlyInScope" class="ml-3">Only In Scope</label>
           <i
-            class="fas fa-info-circle ml-2 text-gray-500"
             v-tooltip.right="'Only include requests that are in scope'"
+            class="fas fa-info-circle ml-2 text-gray-500"
           ></i>
         </div>
       </div>
@@ -80,12 +82,14 @@ const matchGroupsString = computed({
           <Checkbox
             v-model="grepStore.options.skipLargeResponses"
             :binary="true"
-            inputId="skipLargeResponses"
+            input-id="skipLargeResponses"
           />
-          <label for="skipLargeResponses" class="ml-3">Skip Large Responses</label>
+          <label for="skipLargeResponses" class="ml-3"
+            >Skip Large Responses</label
+          >
           <i
-            class="fas fa-info-circle ml-2 text-gray-500"
             v-tooltip.right="'Skip responses larger than 10MB'"
+            class="fas fa-info-circle ml-2 text-gray-500"
           ></i>
         </div>
 
@@ -93,12 +97,12 @@ const matchGroupsString = computed({
           <Checkbox
             v-model="grepStore.options.cleanupOutput"
             :binary="true"
-            inputId="cleanupOutput"
+            input-id="cleanupOutput"
           />
           <label for="cleanupOutput" class="ml-3">Cleanup output</label>
           <i
-            class="fas fa-info-circle ml-2 text-gray-500"
             v-tooltip.right="'Remove non-printable characters from output'"
+            class="fas fa-info-circle ml-2 text-gray-500"
           ></i>
         </div>
 
@@ -106,12 +110,14 @@ const matchGroupsString = computed({
           <Checkbox
             v-model="transformEnabled"
             :binary="true"
-            inputId="transformEnabled"
+            input-id="transformEnabled"
           />
           <label for="transformEnabled" class="ml-3">Transform Results</label>
           <i
+            v-tooltip.right="
+              'Enable to use JavaScript transform on matches (configure via Transform button)'
+            "
             class="fas fa-info-circle ml-2 text-gray-500"
-            v-tooltip.right="'Enable to use JavaScript transform on matches (configure via Transform button)'"
           ></i>
         </div>
       </div>
@@ -121,8 +127,10 @@ const matchGroupsString = computed({
         <label class="block mb-2.5 font-medium">
           Match Groups
           <i
+            v-tooltip.right="
+              'Extract specific groups from regex match. Separate groups with commas.'
+            "
             class="fas fa-info-circle ml-1 text-gray-500"
-            v-tooltip.right="'Extract specific groups from regex match. Separate groups with commas.'"
           ></i>
         </label>
         <InputText
@@ -136,8 +144,10 @@ const matchGroupsString = computed({
         <label class="block mb-2.5 font-medium">
           Max Results
           <i
+            v-tooltip.right="
+              'Maximum number of results to return. Leave empty for no limit'
+            "
             class="fas fa-info-circle ml-1 text-gray-500"
-            v-tooltip.right="'Maximum number of results to return. Leave empty for no limit'"
           ></i>
         </label>
         <InputNumber
@@ -152,8 +162,8 @@ const matchGroupsString = computed({
         <label class="block mb-2.5 font-medium">
           Custom HTTPQL
           <i
-            class="fas fa-info-circle ml-1 text-gray-500"
             v-tooltip.right="'Custom HTTPQL query to filter results'"
+            class="fas fa-info-circle ml-1 text-gray-500"
           ></i>
         </label>
         <InputText

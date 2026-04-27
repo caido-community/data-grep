@@ -1,4 +1,4 @@
-import { FrontendSDK } from "@/types";
+import { type FrontendSDK } from "@/types";
 
 export const copyToClipboard = (sdk: FrontendSDK, text: string): void => {
   navigator.clipboard

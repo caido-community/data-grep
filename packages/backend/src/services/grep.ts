@@ -1,5 +1,6 @@
 import type { Request, RequestsQuery, Response } from "caido:utils";
 import type { GrepOptions, MatchResult } from "shared";
+
 import type { CaidoBackendSDK } from "../types";
 import {
   buildRegexFilter,
@@ -11,8 +12,8 @@ import {
 let isGrepActive = false;
 
 // Keep track of ongoing operations to ensure they have completed
-let stopPromise: Promise<void> | null = null;
-let stopResolve: (() => void) | null = null;
+let stopPromise: Promise<void> | undefined;
+let stopResolve: (() => void) | undefined;
 
 // Store for grep matches - uses value as key for deduplication, stores full MatchResult
 const grepStore = {
@@ -35,11 +36,11 @@ const grepStore = {
   },
 };
 
-function applyTransform(value: string, script: string): string | null {
+function applyTransform(value: string, script: string): string | undefined {
   try {
     const fn = new Function("match", script);
     const result = fn(value);
-    if (result === null || result === undefined) return null;
+    if (result === null || result === undefined) return undefined;
     return typeof result === "string" ? result : String(result);
   } catch {
     return value;
@@ -53,7 +54,7 @@ export const grepService = {
   async grepRequests(
     sdk: CaidoBackendSDK,
     pattern: string,
-    options: GrepOptions
+    options: GrepOptions,
   ): Promise<{
     data?: {
       matchesCount?: number;
@@ -67,7 +68,7 @@ export const grepService = {
     }
 
     // Wait for any pending stop operation to complete
-    if (stopPromise) {
+    if (stopPromise !== undefined) {
       await stopPromise;
     }
 
@@ -98,7 +99,7 @@ export const grepService = {
       };
     }
 
-    if (!stopPromise) {
+    if (stopPromise === undefined) {
       stopPromise = new Promise<void>((resolve) => {
         stopResolve = resolve;
       });
@@ -108,8 +109,8 @@ export const grepService = {
 
     await stopPromise;
 
-    stopPromise = null;
-    stopResolve = null;
+    stopPromise = undefined;
+    stopResolve = undefined;
 
     return {
       data: { success: true, message: "Grep scan stopped successfully" },
@@ -119,10 +120,10 @@ export const grepService = {
   /**
    * Returns all matches from the last completed grep operation
    */
-  async downloadResults(): Promise<{
+  downloadResults(): {
     data?: MatchResult[];
     error?: string;
-  }> {
+  } {
     if (grepStore.matches.size === 0) {
       return { error: "No grep results available" };
     }
@@ -136,7 +137,7 @@ export const grepService = {
   async executeGrepSearch(
     sdk: CaidoBackendSDK,
     pattern: string,
-    options: GrepOptions
+    options: GrepOptions,
   ): Promise<{ matchesCount?: number; error?: string }> {
     const project = await sdk.projects.getCurrent();
     if (!project) {
@@ -144,30 +145,30 @@ export const grepService = {
     }
 
     const lastRequestId = await this.getLastRequestID(sdk);
-    if (!lastRequestId) {
+    if (lastRequestId === undefined || lastRequestId === 0) {
       return { error: "No requests found" };
     }
 
     const regex = new RegExp(pattern, "is");
-    let matchesCount = 0;
 
     sdk.api.send("caidogrep:progress", 0);
 
+    let matchesCount: number;
     try {
       matchesCount = await this.fetchAndProcessRequests(
         sdk,
         regex,
         options,
-        lastRequestId
+        lastRequestId,
       );
     } catch (error) {
-      if (stopResolve) {
+      if (stopResolve !== undefined) {
         stopResolve();
       }
       throw error;
     }
 
-    if (stopResolve) {
+    if (stopResolve !== undefined) {
       stopResolve();
     }
 
@@ -183,7 +184,7 @@ export const grepService = {
     sdk: CaidoBackendSDK,
     regex: RegExp,
     options: GrepOptions,
-    lastRequestId: number
+    lastRequestId: number,
   ): Promise<number> {
     const {
       includeRequests = true,
@@ -204,51 +205,50 @@ export const grepService = {
 
     while (
       hasNextPage &&
-      (!maxResults || matches.size < maxResults) &&
+      (maxResults === undefined || matches.size < maxResults) &&
       isGrepActive
     ) {
       const progress = Math.min(
         Math.floor((processedRequestID / lastRequestId) * 100),
-        99
+        99,
       );
       sdk.api.send("caidogrep:progress", progress);
 
       // Build and execute query with pagination
-      const query: RequestsQuery = after
-        ? sdk.requests.query().filter(regexFilter).first(pageSize).after(after)
-        : sdk.requests.query().filter(regexFilter).first(pageSize);
+      const query: RequestsQuery =
+        after !== undefined
+          ? sdk.requests
+              .query()
+              .filter(regexFilter)
+              .first(pageSize)
+              .after(after)
+          : sdk.requests.query().filter(regexFilter).first(pageSize);
 
       // Execute the query with cancellation check
       const queryPromise = query.execute();
-      let result;
-      try {
-        result = await executeQueryWithCancellationCheck(
-          queryPromise,
-          () => isGrepActive
-        );
-      } catch (queryError) {
-        throw queryError;
-      }
+      const result = await executeQueryWithCancellationCheck(
+        queryPromise,
+        () => isGrepActive,
+      );
 
       if (!isGrepActive) {
-        if (stopResolve) {
+        if (stopResolve !== undefined) {
           stopResolve();
         }
         throw new Error("Grep operation was stopped");
       }
 
-
       // Process each result
       for (const item of result.items) {
         if (!isGrepActive) {
-          if (stopResolve) {
+          if (stopResolve !== undefined) {
             stopResolve();
           }
           throw new Error("Grep operation was stopped");
         }
 
         processedRequestID = Number(item.request.getId());
-        if (maxResults && matches.size >= maxResults) {
+        if (maxResults !== undefined && matches.size >= maxResults) {
           break;
         }
 
@@ -262,9 +262,8 @@ export const grepService = {
           regex,
           matchGroups,
           includeRequests,
-          includeResponses
+          includeResponses,
         );
-
 
         if (newMatches.length > 0) {
           for (const matchResult of newMatches) {
@@ -278,9 +277,12 @@ export const grepService = {
               continue;
             }
 
-            if (options.transformScript) {
-              const transformed = applyTransform(processedValue, options.transformScript);
-              if (transformed === null) continue;
+            if (options.transformScript !== undefined) {
+              const transformed = applyTransform(
+                processedValue,
+                options.transformScript,
+              );
+              if (transformed === undefined) continue;
               processedValue = transformed.trim();
               if (processedValue.length === 0) continue;
             }
@@ -292,7 +294,7 @@ export const grepService = {
               };
               matches.set(processedValue, finalMatch);
               grepStore.addMatch(finalMatch);
-              if (maxResults && matches.size >= maxResults) {
+              if (maxResults !== undefined && matches.size >= maxResults) {
                 break;
               }
             }
@@ -302,7 +304,9 @@ export const grepService = {
 
       // Send new matches if any were found
       if (matches.size > sentMatchCount) {
-        const newMatchResults = Array.from(matches.values()).slice(sentMatchCount);
+        const newMatchResults = Array.from(matches.values()).slice(
+          sentMatchCount,
+        );
         if (sentMatchCount > 25000) {
           sdk.api.send("caidogrep:matches", newMatchResults.length);
         } else {
@@ -328,9 +332,9 @@ export const grepService = {
     request: Request,
     response: Response | undefined,
     regex: RegExp,
-    matchGroups: number[] | null,
+    matchGroups: number[] | undefined,
     includeRequests: boolean,
-    includeResponses: boolean
+    includeResponses: boolean,
   ): MatchResult[] {
     const requestId = String(request.getId());
     const contentMatches: MatchResult[] = [];
@@ -339,7 +343,7 @@ export const grepService = {
       const rawMatches = extractMatches(
         request.getRaw()?.toText() || "",
         regex,
-        matchGroups
+        matchGroups,
       );
       for (const extracted of rawMatches) {
         contentMatches.push({
@@ -356,7 +360,7 @@ export const grepService = {
       const responseRawMatches = extractMatches(
         response.getRaw()?.toText() || "",
         regex,
-        matchGroups
+        matchGroups,
       );
       for (const extracted of responseRawMatches) {
         contentMatches.push({
@@ -375,11 +379,10 @@ export const grepService = {
   /**
    * Retrieves the ID of the last request in the database
    */
-  async getLastRequestID(sdk: CaidoBackendSDK): Promise<number | null> {
+  async getLastRequestID(sdk: CaidoBackendSDK): Promise<number | undefined> {
     const requests = sdk.requests.query().last(1);
     const result = await requests.execute();
-    return result.items[0]?.request.getId()
-      ? Number(result.items[0].request.getId())
-      : null;
+    const id = result.items[0]?.request.getId();
+    return id !== undefined ? Number(id) : undefined;
   },
 };

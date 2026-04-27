@@ -1,4 +1,4 @@
-import { DefineEvents, SDK } from "caido:plugin";
+import { type DefineEvents, type SDK } from "caido:plugin";
 import type { MatchResult } from "shared";
 
 export type BackendEvents = DefineEvents<{

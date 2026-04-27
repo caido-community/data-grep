@@ -1,12 +1,13 @@
-import type { GrepOptions, CustomRegex, MatchResult } from "shared";
+import type { CustomRegex, GrepOptions, MatchResult } from "shared";
+
 import { grepService } from "../services/grep";
 import { getStorageService } from "../services/storage";
 import type { CaidoBackendSDK } from "../types";
 import {
   CustomRegexSchema,
   GrepOptionsSchema,
-  RegexIdSchema,
   GrepPatternSchema,
+  RegexIdSchema,
 } from "../validation/schemas";
 import { handleValidationError } from "../validation/utils";
 
@@ -16,7 +17,7 @@ import { handleValidationError } from "../validation/utils";
 export const grepRequests = async (
   sdk: CaidoBackendSDK,
   pattern: string,
-  options: GrepOptions
+  options: GrepOptions,
 ): Promise<{
   data?: {
     matchesCount?: number;
@@ -37,7 +38,7 @@ export const grepRequests = async (
 /**
  * Stop an active grep operation
  */
-export const stopGrep = async (): Promise<{
+export const stopGrep = (): Promise<{
   data?: { success: boolean; message: string };
   error?: string;
 }> => {
@@ -47,17 +48,17 @@ export const stopGrep = async (): Promise<{
 /**
  * Returns all matches from the last completed grep operation
  */
-export const downloadResults = async (): Promise<{
+export const downloadResults = (): {
   data?: MatchResult[];
   error?: string;
-}> => {
+} => {
   return grepService.downloadResults();
 };
 
 export const upsertCustomRegex = async (
   sdk: CaidoBackendSDK,
   id: string,
-  regex: CustomRegex
+  regex: CustomRegex,
 ): Promise<{
   data?: { success: boolean };
   error?: string;
@@ -75,7 +76,7 @@ export const upsertCustomRegex = async (
 };
 
 export const listCustomRegexes = async (
-  sdk: CaidoBackendSDK
+  sdk: CaidoBackendSDK,
 ): Promise<{
   data?: { id: string; regex: CustomRegex }[];
   error?: string;
@@ -91,7 +92,7 @@ export const listCustomRegexes = async (
 
 export const deleteCustomRegex = async (
   sdk: CaidoBackendSDK,
-  id: string
+  id: string,
 ): Promise<{
   data?: { success: boolean };
   error?: string;
@@ -115,11 +116,11 @@ export const deleteCustomRegex = async (
  */
 export const getRequestData = async (
   sdk: CaidoBackendSDK,
-  requestId: string
+  requestId: string,
 ): Promise<{
   data?: {
     requestRaw: string;
-    responseRaw: string | null;
+    responseRaw?: string;
   };
   error?: string;
 }> => {
@@ -129,8 +130,8 @@ export const getRequestData = async (
       return { error: "Request not found" };
     }
 
-    const requestRaw = reqRes.request.getRaw()?.toText() || "";
-    const responseRaw = reqRes.response?.getRaw()?.toText() || null;
+    const requestRaw = reqRes.request.getRaw()?.toText() ?? "";
+    const responseRaw = reqRes.response?.getRaw()?.toText();
 
     return {
       data: {

@@ -4,11 +4,11 @@ import { Tooltip } from "primevue";
 import PrimeVue from "primevue/config";
 import ConfirmationService from "primevue/confirmationservice";
 import { createApp } from "vue";
+
 import { SDKPlugin } from "./plugins/sdk";
+import "./styles/index.css";
 import type { FrontendSDK } from "./types";
 import App from "./views/App.vue";
-
-import "./styles/index.css";
 
 export const init = (sdk: FrontendSDK) => {
   const app = createApp(App);

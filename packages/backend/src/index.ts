@@ -1,12 +1,13 @@
 import type { DefineAPI, SDK } from "caido:plugin";
+
 import {
+  deleteCustomRegex,
   downloadResults,
+  getRequestData,
   grepRequests,
+  listCustomRegexes,
   stopGrep,
   upsertCustomRegex,
-  listCustomRegexes,
-  deleteCustomRegex,
-  getRequestData,
 } from "./api";
 import { initStorageService } from "./services/storage";
 import type { BackendEvents } from "./types";

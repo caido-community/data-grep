@@ -1,23 +1,47 @@
 <script setup lang="ts">
-import { GuideContainer } from "@/components/guide";
-import { useAIStore, useGrepStore, useGuideStore, usePatternsStore } from "@/stores";
 import Button from "primevue/button";
 import Divider from "primevue/divider";
 import { ref } from "vue";
+
+import { AIDialogContainer } from "./ai-dialog";
+import BatchSearchDialog from "./batch/BatchSearchDialog.vue";
 import Options from "./Options.vue";
+import { PatternsDialogContainer } from "./patterns";
 import Search from "./Search.vue";
 import TransformScriptDialog from "./TransformScriptDialog.vue";
-import { AIDialogContainer } from "./ai-dialog";
-import { PatternsDialogContainer } from "./patterns";
+
+import { GuideContainer } from "@/components/guide";
+import {
+  useAIStore,
+  useBatchSearchStore,
+  useGrepStore,
+  useGuideStore,
+  usePatternsStore,
+} from "@/stores";
 
 const grepStore = useGrepStore();
 const aiStore = useAIStore();
 const patternsStore = usePatternsStore();
 const guideStore = useGuideStore();
-const transformDialogRef = ref<InstanceType<typeof TransformScriptDialog> | null>(null);
+const batchSearchStore = useBatchSearchStore();
+const transformDialogRef = ref<InstanceType<typeof TransformScriptDialog>>();
 
 const openTransformDialog = () => {
   transformDialogRef.value?.open();
+};
+
+const isAnySearchRunning = () =>
+  grepStore.status.isSearching || batchSearchStore.status.isSearching;
+
+const handleSearch = () => {
+  if (isAnySearchRunning()) return;
+  batchSearchStore.resetBatchState();
+  grepStore.searchGrepRequests();
+};
+
+const handleBatchSearch = () => {
+  if (isAnySearchRunning()) return;
+  batchSearchStore.startBatchSearch(grepStore.options);
 };
 </script>
 
@@ -25,23 +49,36 @@ const openTransformDialog = () => {
   <div class="flex flex-col gap-6">
     <Search />
 
-    <Divider :pt="{
-      root: {
-        class:
-          'my-1 text-gray-400 flex relative mx-0 py-0 px-5 w-full before:block before:absolute before:left-0 before:top-1/2 before:w-full before:border-solid before:border-t before:border-surface-200 before:dark:border-surface-600',
-      },
-    }">Options</Divider>
+    <Divider
+      :pt="{
+        root: {
+          class:
+            'my-1 text-gray-400 flex relative mx-0 py-0 px-5 w-full before:block before:absolute before:left-0 before:top-1/2 before:w-full before:border-solid before:border-t before:border-surface-200 before:dark:border-surface-600',
+        },
+      }"
+      >Options</Divider
+    >
     <Options />
 
     <div class="flex justify-between mt-2 gap-2">
-      <div class="flex gap-2">
+      <div class="flex gap-2 flex-wrap">
         <Button
           label="Search"
           icon="fas fa-search"
           class="p-button-primary"
-          @click="grepStore.searchGrepRequests"
           :loading="grepStore.status.isSearching"
-          :disabled="!grepStore.pattern.trim()"
+          :disabled="
+            !grepStore.pattern.trim() || batchSearchStore.status.isSearching
+          "
+          @click="handleSearch"
+        />
+        <Button
+          label="Search All Secrets"
+          icon="fas fa-key"
+          class="p-button-warning"
+          :loading="batchSearchStore.status.isSearching"
+          :disabled="grepStore.status.isSearching"
+          @click="handleBatchSearch"
         />
         <Button
           :loading="aiStore.isProcessing"
@@ -51,7 +88,7 @@ const openTransformDialog = () => {
           @click="aiStore.openDialog"
         />
         <Button
-          label="Predefined Patterns"
+          label="Patterns"
           icon="fas fa-list"
           class="p-button-secondary"
           @click="patternsStore.openDialog"
@@ -60,7 +97,7 @@ const openTransformDialog = () => {
           label="Transform"
           icon="fas fa-cog"
           severity="secondary"
-          :disabled="grepStore.options.transformScript === null"
+          :disabled="grepStore.options.transformScript === undefined"
           @click="openTransformDialog"
         />
       </div>
@@ -78,5 +115,6 @@ const openTransformDialog = () => {
     <PatternsDialogContainer />
     <GuideContainer />
     <TransformScriptDialog ref="transformDialogRef" />
+    <BatchSearchDialog />
   </div>
 </template>

@@ -1,6 +1,8 @@
-import { readFile, writeFile, readdir, rm, mkdir } from "fs/promises";
+import { mkdir, readdir, readFile, rm, writeFile } from "fs/promises";
 import * as path from "path";
+
 import type { CustomRegex } from "shared";
+
 import type { CaidoBackendSDK } from "../types";
 import { CustomRegexSchema, RegexIdSchema } from "../validation/schemas";
 
@@ -17,8 +19,8 @@ export class StorageService {
   private async ensureRegexesDirectory(): Promise<void> {
     try {
       await mkdir(this.regexesDir, { recursive: true });
-    } catch (error) {
-      // Directory might already exist, ignore error
+    } catch {
+      // Directory might already exist
     }
   }
 
@@ -51,13 +53,13 @@ export class StorageService {
           const validatedRegex = CustomRegexSchema.parse(parsedData);
 
           regexes.push({ id: validatedId, regex: validatedRegex });
-        } catch (error) {
+        } catch {
           continue;
         }
       }
 
       return regexes;
-    } catch (error) {
+    } catch {
       return [];
     }
   }
@@ -68,12 +70,12 @@ export class StorageService {
       const filePath = path.join(this.regexesDir, `${validatedId}.json`);
       await rm(filePath);
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
 
-  async getCustomRegex(id: string): Promise<CustomRegex | null> {
+  async getCustomRegex(id: string): Promise<CustomRegex | undefined> {
     try {
       const validatedId = RegexIdSchema.parse(id);
       const filePath = path.join(this.regexesDir, `${validatedId}.json`);
@@ -81,13 +83,13 @@ export class StorageService {
       const parsedData = JSON.parse(content);
       const validatedRegex = CustomRegexSchema.parse(parsedData);
       return validatedRegex;
-    } catch (error) {
-      return null;
+    } catch {
+      return undefined;
     }
   }
 }
 
-let storageService: StorageService | null = null;
+let storageService: StorageService | undefined;
 
 export function initStorageService(sdk: CaidoBackendSDK): void {
   if (storageService) {

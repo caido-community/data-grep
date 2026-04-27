@@ -1,23 +1,26 @@
 <script setup lang="ts">
-import { useSDK } from "@/plugins/sdk";
-import { useGrepRepository } from "@/repositories/grep";
-import { useGrepStore } from "@/stores";
-import { copyToClipboard } from "@/utils/clipboard";
-import { formatTime } from "@/utils/time";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Dropdown from "primevue/dropdown";
 import InputText from "primevue/inputtext";
+import Select from "primevue/select";
 import VirtualScroller from "primevue/virtualscroller";
-import MatchViewer from "./MatchViewer.vue";
 import type { MatchResult } from "shared";
 import { computed, ref } from "vue";
 
+import MatchViewer from "./MatchViewer.vue";
+
+import { useSDK } from "@/plugins/sdk";
+import { useGrepRepository } from "@/repositories/grep";
+import { useBatchSearchStore, useGrepStore } from "@/stores";
+import { copyToClipboard } from "@/utils/clipboard";
+import { formatTime } from "@/utils/time";
+
 const store = useGrepStore();
-const isStoppingSearch = ref(false);
+const batchSearchStore = useBatchSearchStore();
 const isExporting = ref(false);
 const isCopying = ref(false);
-const selectedMatch = ref<MatchResult | null>(null);
+const selectedMatch = ref<MatchResult | undefined>(undefined);
 const sdk = useSDK();
 
 type SortType =
@@ -56,27 +59,52 @@ const sortOptions = [
 const { downloadResults, stopGrep } = useGrepRepository();
 
 const hasResults = computed(
-  () => store.results.searchResults && store.results.searchResults?.length > 0
+  () =>
+    store.results.searchResults !== undefined &&
+    store.results.searchResults.length > 0,
 );
+
+const isBatchSearch = computed(
+  () =>
+    batchSearchStore.status.isSearching ||
+    batchSearchStore.activeCategories.length > 0,
+);
+
+const categoryFilterOptions = computed(() => [
+  { label: "All Categories", value: "all" },
+  ...batchSearchStore.activeCategories.map((c) => ({ label: c, value: c })),
+]);
 
 const filteredAndSortedResults = computed(() => {
   if (!store.results.searchResults) return [];
 
-  // First filter by search term
   let results = [...store.results.searchResults];
+
+  // Filter by secret category (during/after batch search)
+  if (batchSearchStore.selectedResultCategory !== "all") {
+    results = results.filter(
+      (item) =>
+        batchSearchStore.getMatchCategory(item) ===
+        batchSearchStore.selectedResultCategory,
+    );
+  }
+
+  // Filter by search term
   if (resultsFilter.value.trim()) {
     const searchTerm = resultsFilter.value.toLowerCase();
-    results = results.filter(item => item.value.toLowerCase().includes(searchTerm));
+    results = results.filter((item) =>
+      item.value.toLowerCase().includes(searchTerm),
+    );
   }
 
   switch (currentSort.value) {
     case "alphabetical-asc":
       return results.sort((a, b) =>
-        a.value.toLowerCase().localeCompare(b.value.toLowerCase())
+        a.value.toLowerCase().localeCompare(b.value.toLowerCase()),
       );
     case "alphabetical-desc":
       return results.sort((a, b) =>
-        b.value.toLowerCase().localeCompare(a.value.toLowerCase())
+        b.value.toLowerCase().localeCompare(a.value.toLowerCase()),
       );
     case "length-asc":
       return results.sort((a, b) => {
@@ -103,9 +131,9 @@ const copyAllMatches = async () => {
   isCopying.value = true;
   try {
     const data = await downloadResults();
-    if (!data || data.length === 0) return;
+    if (data === undefined || data.length === 0) return;
 
-    const values = data.map(match => match.value);
+    const values = data.map((match) => match.value);
     copyToClipboard(sdk, values.join("\n"));
   } catch (error) {
     sdk.window.showToast("Error copying matches", { variant: "error" });
@@ -120,9 +148,9 @@ const exportToFile = async () => {
   isExporting.value = true;
   try {
     const data = await downloadResults();
-    if (!data || data.length === 0) return;
+    if (data === undefined || data.length === 0) return;
 
-    const values = data.map(match => match.value);
+    const values = data.map((match) => match.value);
     const blob = new Blob([values.join("\n")], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -140,24 +168,29 @@ const exportToFile = async () => {
 };
 
 const stopSearch = async () => {
-  isStoppingSearch.value = true;
+  store.status.isSearching = false;
+  store.results.cancelled = true;
+
   try {
-    await stopGrep();
-  } catch (error) {
-    console.error("Failed to stop grep:", error);
+    const ok = await stopGrep();
+    if (!ok) {
+      store.status.isSearching = true;
+      store.results.cancelled = false;
+    }
+  } catch {
+    store.status.isSearching = true;
+    store.results.cancelled = false;
     sdk.window.showToast("Failed to stop search", { variant: "error" });
-  } finally {
-    isStoppingSearch.value = false;
   }
 };
 
 const openMatchViewer = (match: MatchResult) => {
-  if (!match.requestId) return;
+  if (match.requestId === "") return;
   selectedMatch.value = match;
 };
 
 const closeMatchViewer = () => {
-  selectedMatch.value = null;
+  selectedMatch.value = undefined;
 };
 </script>
 
@@ -172,15 +205,23 @@ const closeMatchViewer = () => {
     <template #content>
       <div class="flex flex-col h-full">
         <div class="flex justify-between items-center mb-4">
-          <span class="text-xl font-semibold">
-            <i class="fas fa-list mr-2"></i>
-            <template v-if="store.results.searchResults">
-              Matches ({{ store.results.uniqueMatchesCount }} matches)
-            </template>
-            <template v-else-if="store.status.isSearching">
-              Searching...
-            </template>
-          </span>
+          <div class="flex flex-col">
+            <span class="text-xl font-semibold">
+              <i class="fas fa-list mr-2"></i>
+              <template v-if="store.results.searchResults">
+                Matches ({{ store.results.uniqueMatchesCount }} matches)
+              </template>
+              <template v-else-if="store.status.isSearching">
+                Searching...
+              </template>
+            </span>
+            <span
+              v-if="store.currentPatternName"
+              class="text-sm text-gray-400 mt-1 ml-7"
+            >
+              Pattern: {{ store.currentPatternName }}
+            </span>
+          </div>
           <div class="text-sm text-gray-500 flex items-center gap-2">
             <template v-if="store.status.isSearching">
               <div class="shimmer">Searching {{ store.status.progress }}%</div>
@@ -200,7 +241,9 @@ const closeMatchViewer = () => {
         <div class="flex flex-col gap-4 h-full">
           <div class="flex justify-between items-center gap-4">
             <div class="relative flex-1">
-              <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+              <i
+                class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"
+              ></i>
               <InputText
                 v-model="resultsFilter"
                 placeholder="Filter results..."
@@ -208,20 +251,35 @@ const closeMatchViewer = () => {
                 :disabled="!hasResults"
               />
             </div>
-            <div class="text-xs text-gray-500">
+            <Select
+              v-if="isBatchSearch && categoryFilterOptions.length > 1"
+              v-model="batchSearchStore.selectedResultCategory"
+              :options="categoryFilterOptions"
+              option-label="label"
+              option-value="value"
+              class="w-48"
+            />
+            <div class="text-xs text-gray-500 shrink-0">
               {{ filteredAndSortedResults.length }} items
-              <template v-if="resultsFilter.trim() && filteredAndSortedResults.length !== store.results.uniqueMatchesCount">
+              <template
+                v-if="
+                  (resultsFilter.trim() ||
+                    batchSearchStore.selectedResultCategory !== 'all') &&
+                  filteredAndSortedResults.length !==
+                    store.results.uniqueMatchesCount
+                "
+              >
                 (filtered from {{ store.results.uniqueMatchesCount }})
               </template>
             </div>
           </div>
           <VirtualScroller
             v-if="store.results.searchResults?.length"
-            :items="filteredAndSortedResults"
-            :itemSize="24"
-            class="w-full h-full border border-gray-700 transition-all duration-200"
-            scrollHeight="100%"
             :key="currentSort + resultsFilter"
+            :items="filteredAndSortedResults"
+            :item-size="24"
+            class="w-full h-full border border-gray-700 transition-all duration-200"
+            scroll-height="100%"
           >
             <template #item="{ item }">
               <div
@@ -245,17 +303,17 @@ const closeMatchViewer = () => {
                 label="Copy All Matches"
                 icon="fas fa-copy"
                 class="p-button-outlined"
-                @click="copyAllMatches"
                 :loading="isCopying"
                 :disabled="!hasResults"
+                @click="copyAllMatches"
               />
               <Button
                 label="Export"
                 icon="fas fa-download"
                 class="p-button-outlined"
-                @click="exportToFile"
                 :loading="isExporting"
                 :disabled="!hasResults"
+                @click="exportToFile"
               />
               <Button
                 v-if="store.status.isSearching"
@@ -263,17 +321,16 @@ const closeMatchViewer = () => {
                 size="small"
                 label="Stop"
                 icon="fas fa-stop"
-                :loading="isStoppingSearch"
                 @click="stopSearch"
               />
             </div>
             <div class="flex items-center gap-1">
               <span class="text-sm text-gray-400 mr-2">Sort:</span>
               <Dropdown
-                :options="sortOptions"
                 v-model="currentSort"
-                optionLabel="label"
-                optionValue="value"
+                :options="sortOptions"
+                option-label="label"
+                option-value="value"
                 class="w-64"
                 placeholder="Select sorting..."
               >
