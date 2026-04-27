@@ -15,6 +15,9 @@ const batchSearchStore = useBatchSearchStore();
     header="Search All Secrets"
     :style="{ width: '500px' }"
     :dismissable-mask="false"
+    :closable="false"
+    :close-on-escape="false"
+    @hide="batchSearchStore.closeWarningDialog"
   >
     <div class="flex flex-col gap-4">
       <div class="flex items-start gap-3">

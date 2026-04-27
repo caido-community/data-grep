@@ -84,7 +84,7 @@ const filteredAndSortedResults = computed(() => {
   if (batchSearchStore.selectedResultCategory !== "all") {
     results = results.filter(
       (item) =>
-        batchSearchStore.getMatchCategory(item.value) ===
+        batchSearchStore.getMatchCategory(item) ===
         batchSearchStore.selectedResultCategory,
     );
   }
@@ -167,12 +167,15 @@ const exportToFile = async () => {
   }
 };
 
-const stopSearch = () => {
-  // Update UI immediately so user sees the stop
+const stopSearch = async () => {
   store.status.isSearching = false;
   store.results.cancelled = true;
-  // Fire-and-forget — backend stop resolves asynchronously
-  stopGrep();
+
+  const ok = await stopGrep();
+  if (!ok) {
+    store.status.isSearching = true;
+    store.results.cancelled = false;
+  }
 };
 
 const openMatchViewer = (match: MatchResult) => {

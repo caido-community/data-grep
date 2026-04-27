@@ -40,7 +40,6 @@ export const useGrepStore = defineStore("grep", () => {
       return;
     }
 
-    currentPatternName.value = "";
     results.searchResults = undefined;
     status.isSearching = true;
     status.progress = 0;
@@ -95,7 +94,7 @@ export const useGrepStore = defineStore("grep", () => {
       } else {
         const newResults = [...(results.searchResults ?? []), ...matches];
 
-        if (newResults.length >= 25000) {
+        if (newResults.length > 25000) {
           const truncatedResults = newResults.slice(0, 25000);
           truncatedResults.push({
             value: "!!! Results truncated to 25K. Export to view more",

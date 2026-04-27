@@ -9,7 +9,12 @@ import {
 function testMatch(pattern: SecretPattern, sample: string): string | undefined {
   const regex = new RegExp(pattern.pattern, "i");
   const match = regex.exec(sample);
-  return match?.[1] ?? match?.[0];
+  if (match === null) return undefined;
+  const groups = pattern.matchGroups ?? [1, 0];
+  for (const g of groups) {
+    if (match[g] !== undefined) return match[g];
+  }
+  return match[0];
 }
 
 const POSITIVE_SAMPLES: [string, string, string][] = [
@@ -319,14 +324,12 @@ const POSITIVE_SAMPLES: [string, string, string][] = [
 
   // --- CI/CD & DevOps (missing) ---
   ["Doppler Token", "key=dp.ct." + "a".repeat(40), "dp.ct." + "a".repeat(40)],
-  ["JFrog Artifactory Key", "key=" + "a".repeat(64), "a".repeat(64)],
   ["JFrog Artifactory URL", "url=mycompany01.jfrog.io", "mycompany01.jfrog.io"],
   [
     "LaunchDarkly Key",
     "key=sdk-abcd1234-ef56-4789-gh01-ijklmnop2345",
     "sdk-abcd1234-ef56-4789-gh01-ijklmnop2345",
   ],
-  ["Repository Deploy Key", "version=1.2.3", "1.2.3"],
   [
     "RubyGems API Key",
     "key=rubygems_" + "a".repeat(48),
@@ -369,7 +372,6 @@ const POSITIVE_SAMPLES: [string, string, string][] = [
     "id=" + "A".repeat(7) + "-" + "B".repeat(72),
     "A".repeat(7) + "-" + "B".repeat(72),
   ],
-  ["PayPal OAuth Secret", "secret=" + "A".repeat(44), "A".repeat(44)],
   [
     "Paystack Key",
     "key=sk_live_" + "A".repeat(40),
@@ -395,7 +397,6 @@ const POSITIVE_SAMPLES: [string, string, string][] = [
     "key=sq0csp-" + "A".repeat(40),
     "sq0csp-" + "A".repeat(40),
   ],
-  ["WePay App ID", "id=123456", "123456"],
 
   // --- Communication (missing) ---
   [

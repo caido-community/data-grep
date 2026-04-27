@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { GrepOptions } from "shared";
+import type { GrepOptions, MatchResult } from "shared";
 import { computed, reactive, ref } from "vue";
 
 import { useGrepStore } from "./grepStore";
@@ -8,6 +8,10 @@ import { SECRET_PATTERNS } from "@/data/secret-patterns";
 import type { SecretPatternCategory } from "@/data/secret-patterns";
 import { useSDK } from "@/plugins/sdk";
 import { useGrepRepository } from "@/repositories/grep";
+
+function matchKey(match: MatchResult): string {
+  return `${match.requestId}:${match.source}:${match.startIndex}:${match.endIndex}:${match.value}`;
+}
 
 interface BatchSearchStatus {
   isSearching: boolean;
@@ -24,7 +28,6 @@ export const useBatchSearchStore = defineStore("batchSearch", () => {
   const showWarningDialog = ref(false);
   const pendingOptions = ref<GrepOptions | undefined>();
 
-  // Maps match value -> category for filtering results
   const matchCategoryMap = ref(new Map<string, SecretPatternCategory>());
   const selectedResultCategory = ref<SecretPatternCategory | "all">("all");
 
@@ -93,7 +96,11 @@ export const useBatchSearchStore = defineStore("batchSearch", () => {
         try {
           const result = await grepRepository.searchGrepRequests(
             pattern.pattern,
-            { ...options, maxResults: 100 },
+            {
+              ...options,
+              maxResults: 100,
+              matchGroups: pattern.matchGroups ?? [1, 0],
+            },
           );
 
           if (result.cancelled) {
@@ -106,7 +113,7 @@ export const useBatchSearchStore = defineStore("batchSearch", () => {
           for (let i = countBefore; i < currentResults.length; i++) {
             const match = currentResults[i];
             if (match !== undefined) {
-              matchCategoryMap.value.set(match.value, pattern.category);
+              matchCategoryMap.value.set(matchKey(match), pattern.category);
             }
           }
 
@@ -163,8 +170,10 @@ export const useBatchSearchStore = defineStore("batchSearch", () => {
     selectedResultCategory.value = "all";
   }
 
-  function getMatchCategory(value: string): SecretPatternCategory | undefined {
-    return matchCategoryMap.value.get(value);
+  function getMatchCategory(
+    match: MatchResult,
+  ): SecretPatternCategory | undefined {
+    return matchCategoryMap.value.get(matchKey(match));
   }
 
   return {

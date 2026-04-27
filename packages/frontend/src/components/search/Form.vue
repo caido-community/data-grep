@@ -30,9 +30,18 @@ const openTransformDialog = () => {
   transformDialogRef.value?.open();
 };
 
+const isAnySearchRunning = () =>
+  grepStore.status.isSearching || batchSearchStore.status.isSearching;
+
 const handleSearch = () => {
+  if (isAnySearchRunning()) return;
   batchSearchStore.resetBatchState();
   grepStore.searchGrepRequests();
+};
+
+const handleBatchSearch = () => {
+  if (isAnySearchRunning()) return;
+  batchSearchStore.startBatchSearch(grepStore.options);
 };
 </script>
 
@@ -58,7 +67,9 @@ const handleSearch = () => {
           icon="fas fa-search"
           class="p-button-primary"
           :loading="grepStore.status.isSearching"
-          :disabled="!grepStore.pattern.trim()"
+          :disabled="
+            !grepStore.pattern.trim() || batchSearchStore.status.isSearching
+          "
           @click="handleSearch"
         />
         <Button
@@ -66,7 +77,8 @@ const handleSearch = () => {
           icon="fas fa-key"
           class="p-button-warning"
           :loading="batchSearchStore.status.isSearching"
-          @click="batchSearchStore.startBatchSearch(grepStore.options)"
+          :disabled="grepStore.status.isSearching"
+          @click="handleBatchSearch"
         />
         <Button
           :loading="aiStore.isProcessing"

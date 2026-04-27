@@ -19,6 +19,7 @@ export interface SecretPattern {
   name: string;
   pattern: string;
   category: SecretPatternCategory;
+  matchGroups?: number[];
 }
 
 export const SECRET_PATTERNS: SecretPattern[] = [
@@ -163,11 +164,6 @@ export const SECRET_PATTERNS: SecretPattern[] = [
     category: "CI/CD & DevOps",
   },
   {
-    name: "JFrog Artifactory Key",
-    pattern: "\\b([a-zA-Z0-9]{64,73})\\b",
-    category: "CI/CD & DevOps",
-  },
-  {
     name: "JFrog Artifactory URL",
     pattern: "\\b([A-Za-z0-9][A-Za-z0-9\\-]{0,61}[A-Za-z0-9]\\.jfrog\\.io)",
     category: "CI/CD & DevOps",
@@ -191,11 +187,6 @@ export const SECRET_PATTERNS: SecretPattern[] = [
   {
     name: "Pulumi Access Token",
     pattern: "\\b(pul-[a-z0-9]{40})\\b",
-    category: "CI/CD & DevOps",
-  },
-  {
-    name: "Repository Deploy Key",
-    pattern: "\\d+\\.\\d+\\.\\d+",
     category: "CI/CD & DevOps",
   },
   {
@@ -266,11 +257,6 @@ export const SECRET_PATTERNS: SecretPattern[] = [
     category: "Payment & Finance",
   },
   {
-    name: "PayPal OAuth Secret",
-    pattern: "\\b([A-Za-z0-9_\\.\\-]{44,80})\\b",
-    category: "Payment & Finance",
-  },
-  {
     name: "Paystack Key",
     pattern: "\\b(sk\\_[a-z]{1,}\\_[A-Za-z0-9]{40})\\b",
     category: "Payment & Finance",
@@ -315,11 +301,6 @@ export const SECRET_PATTERNS: SecretPattern[] = [
   {
     name: "Stripe Secret Key",
     pattern: "\\b([rs]k_live_[a-zA-Z0-9]{20,247})\\b",
-    category: "Payment & Finance",
-  },
-  {
-    name: "WePay App ID",
-    pattern: "\\b(\\d{6})\\b",
     category: "Payment & Finance",
   },
 
