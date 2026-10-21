@@ -11,4 +11,4 @@ export type BackendEvents = DefineEvents<{
   "caidogrep:matches": (matches: MatchResult[] | number) => void;
 }>;
 
-export type CaidoBackendSDK = SDK<never, BackendEvents>;
+export type CaidoBackendSDK = SDK<unknown, BackendEvents>;

@@ -18,7 +18,7 @@ const aiStore = useAIStore();
     @hide="aiStore.closeDialog"
   >
     <div class="flex flex-col gap-4">
-      <NoProviders v-if="!aiStore.hasAvailableProviders" />
+      <NoProviders v-if="!aiStore.hasModels" />
       <AIDialog v-else />
     </div>
   </Dialog>
