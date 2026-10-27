@@ -41,7 +41,11 @@ export function listModelGroups(sdk: FrontendSDK): ModelGroup[] {
       id: provider.id,
       label: getProviderLabel(provider),
       models: models
-        .filter((model) => model.providerId === provider.id)
+        .filter(
+          (model) =>
+            model.providerId === provider.id &&
+            model.support.structuredOutput !== "UNSUPPORTED",
+        )
         .map((model) => ({
           key: model.modelId,
           name: model.displayName,
