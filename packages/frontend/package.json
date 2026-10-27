@@ -24,8 +24,8 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
-    "@caido/sdk-backend": "0.55.3",
-    "@caido/sdk-frontend": "0.55.3",
+    "@caido/sdk-backend": "0.59.0",
+    "@caido/sdk-frontend": "0.59.0",
     "backend": "workspace:*",
     "shared": "workspace:*",
     "vitest": "2.1.9",

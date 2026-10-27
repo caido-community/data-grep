@@ -13,9 +13,10 @@ const aiStore = useAIStore();
     <div class="flex flex-col gap-1">
       <label class="text-xs font-medium text-surface-400">Model</label>
       <Select
-        v-model="aiStore.selectedModel"
-        :options="aiStore.availableModelGroups"
+        v-model="aiStore.selectedModelKey"
+        :options="aiStore.modelGroups"
         option-label="name"
+        option-value="key"
         option-group-label="label"
         option-group-children="models"
         placeholder="Select a model"
@@ -44,7 +45,7 @@ const aiStore = useAIStore();
         icon="fas fa-robot"
         class="p-button-primary"
         :loading="aiStore.isProcessing"
-        :disabled="!aiStore.selectedModel || !aiStore.prompt.trim()"
+        :disabled="!aiStore.selectedModelKey || !aiStore.prompt.trim()"
         @click="aiStore.processAIPrompt"
       />
     </div>

@@ -1,3 +1,4 @@
+import type { AIModelId } from "@caido/sdk-frontend";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
@@ -6,8 +7,7 @@ import { useGrepStore } from "./grepStore";
 import { useSDK } from "@/plugins/sdk";
 import {
   generateRegexPattern,
-  getAvailableModelGroups,
-  type Model,
+  listModelGroups,
   type ModelGroup,
 } from "@/utils/ai";
 
@@ -18,33 +18,25 @@ export const useAIStore = defineStore("ai", () => {
   const dialogVisible = ref(false);
   const prompt = ref("");
   const isProcessing = ref(false);
-  const selectedModel = ref<Model | undefined>();
+  const selectedModelKey = ref<AIModelId | undefined>();
+  const modelGroups = ref<ModelGroup[]>([]);
 
-  const availableModelGroups = computed<ModelGroup[]>(() =>
-    getAvailableModelGroups(sdk),
-  );
+  const hasModels = computed(() => modelGroups.value.length > 0);
 
-  const hasAvailableProviders = computed(
-    () => availableModelGroups.value.length > 0,
-  );
+  function refreshModels() {
+    modelGroups.value = listModelGroups(sdk);
+    const models = modelGroups.value.flatMap((group) => group.models);
+    if (!models.some((model) => model.key === selectedModelKey.value)) {
+      selectedModelKey.value = models[0]?.key;
+    }
+  }
+
+  refreshModels();
+  sdk.ai.onUpstreamModelsChange(refreshModels);
 
   function openDialog() {
     dialogVisible.value = true;
-
-    const groups = availableModelGroups.value;
-    const allModels = groups.flatMap((g) => g.models);
-
-    const currentStillAvailable =
-      selectedModel.value !== undefined &&
-      allModels.some(
-        (m) =>
-          m.id === selectedModel.value!.id &&
-          m.provider === selectedModel.value!.provider,
-      );
-
-    if (!currentStillAvailable && allModels.length > 0) {
-      selectedModel.value = allModels[0];
-    }
+    refreshModels();
   }
 
   function closeDialog() {
@@ -53,7 +45,7 @@ export const useAIStore = defineStore("ai", () => {
   }
 
   async function processAIPrompt() {
-    if (!selectedModel.value) {
+    if (selectedModelKey.value === undefined) {
       sdk.window.showToast("No AI model selected", { variant: "error" });
       return;
     }
@@ -69,7 +61,7 @@ export const useAIStore = defineStore("ai", () => {
     try {
       const { pattern, matchGroup } = await generateRegexPattern(
         sdk,
-        selectedModel.value,
+        selectedModelKey.value,
         prompt.value,
       );
 
@@ -94,9 +86,9 @@ export const useAIStore = defineStore("ai", () => {
     dialogVisible,
     prompt,
     isProcessing,
-    selectedModel,
-    availableModelGroups,
-    hasAvailableProviders,
+    selectedModelKey,
+    modelGroups,
+    hasModels,
     openDialog,
     closeDialog,
     processAIPrompt,

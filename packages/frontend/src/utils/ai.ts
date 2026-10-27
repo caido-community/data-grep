@@ -1,123 +1,65 @@
+import type {
+  AIModelId,
+  AIUpstreamProvider,
+  AIUpstreamProviderKind,
+} from "@caido/sdk-frontend";
 import { generateText, Output } from "ai";
 import { z } from "zod";
 
 import type { FrontendSDK } from "@/types";
 
-export const ModelProvider = {
-  OpenRouter: "openrouter",
-  OpenAI: "openai",
-  Anthropic: "anthropic",
-  Google: "google",
-} as const;
-
-export type ModelProvider = (typeof ModelProvider)[keyof typeof ModelProvider];
-
-export interface Model {
-  id: string;
+export type Model = {
+  key: AIModelId;
   name: string;
-  provider: ModelProvider;
-}
+};
 
-export interface ModelGroup {
+export type ModelGroup = {
   label: string;
-  provider: ModelProvider;
   models: Model[];
-}
+};
 
-const MODEL_GROUPS: ModelGroup[] = [
-  {
-    label: "OpenAI",
-    provider: ModelProvider.OpenAI,
-    models: [
-      { id: "gpt-5.4", name: "GPT 5.4", provider: ModelProvider.OpenAI },
-      {
-        id: "gpt-5.4-nano",
-        name: "GPT 5.4 Nano",
-        provider: ModelProvider.OpenAI,
-      },
-      {
-        id: "gpt-5.3-codex",
-        name: "GPT 5.3 Codex",
-        provider: ModelProvider.OpenAI,
-      },
-    ],
-  },
-  {
-    label: "Anthropic",
-    provider: ModelProvider.Anthropic,
-    models: [
-      {
-        id: "claude-sonnet-4-6",
-        name: "Sonnet 4.6",
-        provider: ModelProvider.Anthropic,
-      },
-      {
-        id: "claude-opus-4-6",
-        name: "Opus 4.6",
-        provider: ModelProvider.Anthropic,
-      },
-    ],
-  },
-  {
-    label: "Google",
-    provider: ModelProvider.Google,
-    models: [
-      {
-        id: "gemini-3.1-pro-preview-customtools",
-        name: "Gemini 3.1 Pro",
-        provider: ModelProvider.Google,
-      },
-      {
-        id: "gemini-3-flash-preview",
-        name: "Gemini 3 Flash",
-        provider: ModelProvider.Google,
-      },
-    ],
-  },
-  {
-    label: "OpenRouter",
-    provider: ModelProvider.OpenRouter,
-    models: [
-      {
-        id: "openai/gpt-5.4",
-        name: "GPT 5.4",
-        provider: ModelProvider.OpenRouter,
-      },
-      {
-        id: "openai/gpt-5.4-nano",
-        name: "GPT 5.4 Nano",
-        provider: ModelProvider.OpenRouter,
-      },
-      {
-        id: "anthropic/claude-sonnet-4.6",
-        name: "Sonnet 4.6",
-        provider: ModelProvider.OpenRouter,
-      },
-      {
-        id: "anthropic/claude-opus-4.6",
-        name: "Opus 4.6",
-        provider: ModelProvider.OpenRouter,
-      },
-      {
-        id: "google/gemini-3-flash-preview",
-        name: "Gemini 3 Flash",
-        provider: ModelProvider.OpenRouter,
-      },
-    ],
-  },
-];
+const PROVIDER_LABELS: Partial<Record<AIUpstreamProviderKind, string>> = {
+  ANTHROPIC: "Anthropic",
+  BEDROCK: "Bedrock",
+  CHATGPT: "ChatGPT",
+  GEMINI: "Gemini",
+  OPENAI: "OpenAI",
+  OPENROUTER: "OpenRouter",
+  XAI: "xAI",
+};
 
-export function isProviderConfigured(
-  sdk: FrontendSDK,
-  provider: ModelProvider,
-): boolean {
-  return sdk.ai
+const getProviderLabel = (provider: AIUpstreamProvider) =>
+  provider.kind === "XAI" && provider.auth === "OAUTH"
+    ? "Grok"
+    : (PROVIDER_LABELS[provider.kind] ?? provider.id);
+
+export function listModelGroups(sdk: FrontendSDK): ModelGroup[] {
+  const models = sdk.ai.getUpstreamModels();
+  const groups = sdk.ai
     .getUpstreamProviders()
-    .some((p) => p.id === provider && p.status === "Ready");
-}
+    .map((provider) => ({
+      id: provider.id,
+      label: getProviderLabel(provider),
+      models: models
+        .filter(
+          (model) =>
+            model.providerId === provider.id &&
+            model.support.structuredOutput !== "UNSUPPORTED",
+        )
+        .map((model) => ({
+          key: model.modelId,
+          name: model.displayName,
+        })),
+    }))
+    .filter((group) => group.models.length > 0);
 
-export function getAvailableModelGroups(sdk: FrontendSDK): ModelGroup[] {
-  return MODEL_GROUPS.filter((g) => isProviderConfigured(sdk, g.provider));
+  return groups.map(({ id, label, models }) => ({
+    label:
+      groups.filter((group) => group.label === label).length > 1
+        ? `${label} (${id})`
+        : label,
+    models,
+  }));
 }
 
 const outputSchema = z.object({
@@ -146,22 +88,17 @@ OUTPUT: { "pattern": "[\\\\w.-]+@[\\\\w.-]+\\\\.\\\\w+", "matchGroup": 0 }
 
 export async function generateRegexPattern(
   sdk: FrontendSDK,
-  model: Model,
+  modelKey: AIModelId,
   userPrompt: string,
 ): Promise<{ pattern: string; matchGroup: number }> {
-  if (!isProviderConfigured(sdk, model.provider)) {
-    throw new Error(`Provider "${model.provider}" is not configured`);
+  const isAvailable = listModelGroups(sdk).some((group) =>
+    group.models.some((model) => model.key === modelKey),
+  );
+  if (!isAvailable) {
+    throw new Error(`Model "${modelKey}" is no longer available`);
   }
 
-  const provider = sdk.ai.createProvider();
-  const modelKey = `${model.provider}/${model.id}`;
-
-  const languageModel = provider(modelKey, {
-    capabilities: {
-      reasoning: false,
-      structured_output: true,
-    },
-  });
+  const languageModel = sdk.ai.createProvider()(modelKey);
 
   const result = await generateText({
     model: languageModel,
